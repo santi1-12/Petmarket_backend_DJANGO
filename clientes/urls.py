@@ -1,11 +1,12 @@
-from django.urls import path
+from django.urls import path, include
+from rest_framework.routers import DefaultRouter
+from .views import ClienteViewSet
 
-# Placeholder urlpatterns for the "clientes" app.
-# Keep this file minimal so `include('clientes.urls')` does not raise
-# ImproperlyConfigured: the included URLconf does not appear to have any patterns.
 app_name = 'clientes'
 
+router = DefaultRouter()
+router.register(r'', ClienteViewSet, basename='cliente')
+
 urlpatterns = [
-	# Add cliente-specific routes here, e.g.:
-	# path('', views.ClienteListView.as_view(), name='list'),
+	path('', include(router.urls)),
 ]

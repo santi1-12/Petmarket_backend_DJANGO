@@ -29,3 +29,28 @@ Then visit:
 - http://127.0.0.1:8000/api/accounts/login/ (and other account endpoints)
 
 If you want any additional routes for `clientes`, `empleados` or `pedidos` I can scaffold viewsets and serializers next.
+
+API quick reference
+-------------------
+
+- Public endpoints:
+	- GET /api/productos/  -> lista de productos (público)
+
+- Auth (accounts):
+	- POST /api/accounts/register/  -> registro
+	- POST /api/accounts/login/     -> login (devuelve tokens JWT)
+	- GET  /api/accounts/profile/   -> perfil (requiere auth)
+
+- Carrito (requiere autenticación como `cliente`):
+	- POST /api/pedidos/agregar/     -> agregar producto al carrito (body: {"productId": "<id>", "quantity": 1})
+	- GET  /api/pedidos/count/       -> devuelve cantidad total de items
+	- PUT  /api/pedidos/actualizar/<productId>/ -> actualizar cantidad (body: {"quantity": 2})
+	- DELETE /api/pedidos/eliminar/<productId>/ -> eliminar item
+	- DELETE /api/pedidos/limpiar/  -> vaciar carrito
+
+Examples (PowerShell):
+
+Invoke-RestMethod -Uri http://127.0.0.1:8000/api/productos/ -Method Get
+
+# Iniciar sesión en el browsable admin o usar el endpoint de login para obtener JWT
+

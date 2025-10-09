@@ -3,10 +3,10 @@ from rest_framework.routers import DefaultRouter
 from .views import ProductoViewSet
 
 router = DefaultRouter()
-# Register the productos viewset under the 'productos' prefix so generated
-# routes are predictable (list, detail, etc.). Use a basename in case the
-# ViewSet does not define a queryset attribute.
-router.register(r'productos', ProductoViewSet, basename='producto')
+# Register at root of this include so that when we include this file under
+# `path('api/productos/', include(...))` the list endpoint is exactly
+# `/api/productos/` (not `/api/productos/productos/`).
+router.register(r'', ProductoViewSet, basename='producto')
 
 urlpatterns = [
     path('', include(router.urls)),

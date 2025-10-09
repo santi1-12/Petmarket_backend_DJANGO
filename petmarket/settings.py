@@ -43,6 +43,7 @@ INSTALLED_APPS = [
     'clientes',
     'empleados',
     'pedidos',
+    'facturas',
 ]
 
 MIDDLEWARE = [
@@ -131,5 +132,9 @@ REST_FRAMEWORK = {
         'rest_framework_simplejwt.authentication.JWTAuthentication',
     ],
 }
+# Also allow session auth so the browsable API and admin session work smoothly
+REST_FRAMEWORK['DEFAULT_AUTHENTICATION_CLASSES'].append(
+    'rest_framework.authentication.SessionAuthentication'
+)
 # Use the custom user model defined in the accounts app
 AUTH_USER_MODEL = 'accounts.CustomUser'
