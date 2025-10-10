@@ -13,9 +13,12 @@ class RegisterView(generics.CreateAPIView):
 
 class LoginView(APIView):
     def post(self, request):
-        serializer = LoginSerializer(data=request.data)
+        serializer = LoginSerializer(data=request.data, context={'request': request})
         serializer.is_valid(raise_exception=True)
-        return Response(serializer.validated_data)
+        data = serializer.validated_data
+        # Explicitly include a flag for frontend: password visibility is static/disabled
+        data['show_password'] = False
+        return Response(data)
 
 class LogoutView(APIView):
     permission_classes = [permissions.IsAuthenticated]
