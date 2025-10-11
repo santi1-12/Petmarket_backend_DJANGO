@@ -2,24 +2,43 @@
 {% block title %}{{ producto.nombre }} - PetMarket{% endblock %}
 
 {% block content %}
-  <div class="card mx-auto" style="max-width:800px;">
-    <div class="card-body">
-      <h1 class="card-title">{{ producto.nombre }}</h1>
-      {% if producto.image %}
-        <img src="{{ producto.image.url }}" class="img-fluid mb-3" style="max-height:360px; object-fit:contain">
-      {% endif %}
-      <p class="text-muted">{{ producto.descripcion }}</p>
-      <p class="h4">Precio: ${{ producto.precio }}</p>
-      <p>Stock disponible: <strong>{{ producto.stock }}</strong></p>
-      <div class="d-flex gap-2">
-        <a class="btn btn-success" href="/productos/">Volver al catálogo</a>
-        <form method="post" action="/carrito/add/{{ producto.pk }}/" style="display:inline">
+  <div class="row gx-4 gy-4">
+    <div class="col-lg-6">
+      <div class="card p-3">
+        <div class="thumb-wrapper" style="height:420px">
+          {% if producto.image %}
+            <img src="{{ producto.image.url }}" class="thumb-img product-image rounded" alt="{{ producto.nombre }}">
+          {% else %}
+            <div class="thumb-img">Sin imagen</div>
+          {% endif %}
+        </div>
+        <div class="d-flex gap-2 mt-3">
+          <a class="btn btn-outline-secondary" href="/productos/">Volver</a>
+        </div>
+      </div>
+    </div>
+    <div class="col-lg-6">
+      <div class="card p-3">
+        <h1 class="h3">{{ producto.nombre }}</h1>
+        <p class="text-muted small mb-3">{{ producto.descripcion }}</p>
+        <div class="d-flex align-items-center gap-3 mb-3">
+          <div class="h3 mb-0">${{ producto.precio }}</div>
+          <div class="text-muted">Stock: <strong>{{ producto.stock }}</strong></div>
+        </div>
+        <form method="post" action="/carrito/add/{{ producto.pk }}/">
           {% csrf_token %}
-          <button class="btn btn-primary">Añadir al carrito</button>
+          <div class="d-flex gap-2">
+            <button class="btn btn-primary">Añadir al carrito</button>
+            <a class="btn btn-outline-secondary" href="/productos/">Seguir comprando</a>
+          </div>
         </form>
-        {% if request.user.is_authenticated and request.user.role in ('empleado', 'admin') %}
-          <a class="btn btn-outline-primary" href="/productos/{{ producto.pk }}/editar/">Editar</a>
-          <a class="btn btn-outline-danger" href="/productos/{{ producto.pk }}/eliminar/">Eliminar</a>
+        {% if request.user.is_authenticated %}
+          {% if request.user.role == 'empleado' or request.user.role == 'admin' %}
+            <div class="mt-3">
+              <a class="btn btn-sm btn-outline-primary" href="/productos/{{ producto.pk }}/editar/">Editar</a>
+              <a class="btn btn-sm btn-outline-danger" href="/productos/{{ producto.pk }}/eliminar/">Eliminar</a>
+            </div>
+          {% endif %}
         {% endif %}
       </div>
     </div>

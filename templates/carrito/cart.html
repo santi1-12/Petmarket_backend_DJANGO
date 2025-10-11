@@ -9,9 +9,22 @@
     {% for it in items %}
       <tr>
         <td>{{ it.producto.nombre }}</td>
-        <td>{{ it.qty }}</td>
+        <td>
+          {% if request.user.is_authenticated %}
+            <form method="post" action="/carrito/update/" class="d-flex gap-2">
+              {% csrf_token %}
+              <input type="hidden" name="item_id" value="{{ it.id }}">
+              <input type="number" name="qty" min="0" value="{{ it.qty }}" class="form-control" style="width:80px">
+              <button class="btn btn-sm btn-primary">Actualizar</button>
+            </form>
+          {% else %}
+            {{ it.qty }}
+          {% endif %}
+        </td>
         <td>${{ it.subtotal }}</td>
-        <td><a class="btn btn-sm btn-danger" href="/carrito/remove/{{ it.producto.pk }}/">Eliminar</a></td>
+        <td>
+          <a class="btn btn-sm btn-danger" href="/carrito/remove/{{ it.producto.pk }}/">Eliminar</a>
+        </td>
       </tr>
     {% endfor %}
     </tbody>

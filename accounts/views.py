@@ -8,6 +8,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework_simplejwt.tokens import RefreshToken
 from .forms import CustomUserCreationForm, CustomAuthenticationForm
+from carrito.models import Cart, CartItem
 
 
 # API views (existing JWT endpoints)
@@ -63,6 +64,26 @@ def login_page(request):
         if form.is_valid():
             user = form.get_user()
             auth_login(request, user)
+            # Merge session cart into persistent cart for logged-in users
+            session_cart = request.session.get('cart', {})
+            if session_cart:
+                cart, _ = Cart.objects.get_or_create(user=user)
+                for pid, qty in session_cart.items():
+                    try:
+                        pid_int = int(pid)
+                        item, created = CartItem.objects.get_or_create(cart=cart, producto_id=pid_int)
+                        if not created:
+                            item.quantity += int(qty)
+                        else:
+                            item.quantity = int(qty)
+                        item.save()
+                    except Exception:
+                        continue
+                # clear session cart
+                try:
+                    del request.session['cart']
+                except KeyError:
+                    pass
             return redirect('/')
         else:
             from django.contrib import messages

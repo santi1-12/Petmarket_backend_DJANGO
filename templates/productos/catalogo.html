@@ -3,18 +3,15 @@
 
 {% block content %}
   <div class="d-flex justify-content-between align-items-center mb-3">
-    <h1 class="mb-0">Catálogo de Productos</h1>
-    <form class="d-flex" method="get">
-      <input class="form-control me-2" type="search" placeholder="Buscar" aria-label="Buscar" name="q" value="{{ request.GET.q }}">
-      <button class="btn btn-outline-secondary" type="submit">Buscar</button>
-    </form>
+    <h1 class="mb-0">Catálogo</h1>
+    <a class="btn btn-outline-secondary d-lg-none" data-bs-toggle="collapse" href="#catalogFilters" role="button">Filtros</a>
   </div>
   <div class="row">
-    <div class="col-md-3 mb-3">
-      <div class="card p-3">
-        <h6>Filtros</h6>
+    <div class="col-lg-3 mb-3">
+      <div id="catalogFilters" class="filter-card collapse show">
+        <h6 class="mb-3">Filtros</h6>
         <form method="get">
-          <div class="mb-2">
+          <div class="mb-3">
             <label class="form-label">Categorías</label>
             {% for cat in categorias %}
               <div class="form-check">
@@ -23,35 +20,47 @@
               </div>
             {% endfor %}
           </div>
-          <div class="mb-2">
-            <label class="form-label">Precio min</label>
-            <input name="min_price" class="form-control" value="{{ request.GET.min_price }}">
+          <div class="row">
+            <div class="col-6 mb-2">
+              <label class="form-label">Precio min</label>
+              <input name="min_price" class="form-control" value="{{ request.GET.min_price }}">
+            </div>
+            <div class="col-6 mb-2">
+              <label class="form-label">Precio max</label>
+              <input name="max_price" class="form-control" value="{{ request.GET.max_price }}">
+            </div>
           </div>
-          <div class="mb-2">
-            <label class="form-label">Precio max</label>
-            <input name="max_price" class="form-control" value="{{ request.GET.max_price }}">
+          <div class="d-flex gap-2">
+            <button class="btn btn-primary" type="submit">Aplicar</button>
+            <a href="/productos/" class="btn btn-outline-secondary">Limpiar</a>
           </div>
-          <button class="btn btn-primary" type="submit">Aplicar</button>
         </form>
       </div>
     </div>
-    <div class="col-md-9">
-      <div class="row row-cols-1 row-cols-md-3 g-4">
+    <div class="col-lg-9">
+      <div id="productosContainer" class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
     {% for p in productos %}
       <div class="col">
-        <div class="card h-100 catalog-card">
-          {% if p.image %}
-            <img src="{{ p.image.url }}" class="card-img-top" style="height:180px; object-fit:cover">
-          {% else %}
-            <div class="placeholder-img">Sin imagen</div>
-          {% endif %}
+        <div class="product-card h-100 position-relative overflow-hidden">
+          <div class="thumb-wrapper">
+            {% if p.image %}
+              <img src="{{ p.image.url }}" class="thumb-img product-image" alt="{{ p.nombre }}">
+            {% else %}
+              <img src="/static/img/placeholder.png" class="thumb-img product-image" alt="Sin imagen">
+            {% endif %}
+            {% if p.categoria %}
+              <span class="badge bg-secondary categoria-badge">{{ p.categoria }}</span>
+            {% endif %}
+          </div>
           <div class="card-body d-flex flex-column">
-            <h5 class="card-title"><a href="/productos/{{ p.id }}/" class="stretched-link text-decoration-none">{{ p.nombre }}</a></h5>
-            <p class="card-text text-muted">{{ p.descripcion|truncatechars:120 }}</p>
-            <div class="mt-auto">
-              <div class="fw-bold">${{ p.precio }}</div>
-              <small class="text-secondary">Stock: {{ p.stock }}</small>
-              <form method="post" action="/carrito/add/{{ p.pk }}/" class="mt-2">
+            <h5 class="card-title"><a href="/productos/{{ p.id }}/" class="stretched-link text-decoration-none text-dark">{{ p.nombre }}</a></h5>
+            <p class="card-text small text-muted">{{ p.descripcion|truncatechars:100 }}</p>
+            <div class="mt-auto d-flex justify-content-between align-items-center">
+              <div>
+                <div class="fw-bold h5 mb-0">${{ p.precio }}</div>
+                <small class="text-muted">Stock: {{ p.stock }}</small>
+              </div>
+              <form method="post" action="/carrito/add/{{ p.pk }}/">
                 {% csrf_token %}
                 <button class="btn btn-sm btn-primary">Añadir</button>
               </form>
@@ -60,7 +69,7 @@
         </div>
       </div>
     {% empty %}
-      <p>No hay productos disponibles.</p>
+      <div class="col-12"><div class="no-products">No hay productos disponibles.</div></div>
     {% endfor %}
       </div>
     </div>
