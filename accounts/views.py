@@ -48,10 +48,56 @@ class ProfileView(generics.RetrieveAPIView):
 # Server-rendered session views
 def register_page(request):
     if request.method == 'POST':
-        form = CustomUserCreationForm(request.POST)
-        if form.is_valid():
-            user = form.save()
+        # Handle modal form data
+        username = request.POST.get('username')
+        email = request.POST.get('email')
+        password1 = request.POST.get('password1')
+        password2 = request.POST.get('password2')
+        first_name = request.POST.get('first_name', '')
+        last_name = request.POST.get('last_name', '')
+        
+        # Basic validation
+        if not username or not email or not password1 or not password2:
+            from django.contrib import messages
+            messages.error(request, 'Todos los campos son obligatorios.')
+            return redirect('/')
+            
+        if password1 != password2:
+            from django.contrib import messages
+            messages.error(request, 'Las contraseñas no coinciden.')
+            return redirect('/')
+            
+        if len(password1) < 8:
+            from django.contrib import messages
+            messages.error(request, 'La contraseña debe tener al menos 8 caracteres.')
+            return redirect('/')
+            
+        if CustomUser.objects.filter(username=username).exists():
+            from django.contrib import messages
+            messages.error(request, 'El nombre de usuario ya existe.')
+            return redirect('/')
+            
+        if CustomUser.objects.filter(email=email).exists():
+            from django.contrib import messages
+            messages.error(request, 'El email ya está registrado.')
+            return redirect('/')
+        
+        try:
+            # Create user
+            user = CustomUser.objects.create_user(
+                username=username,
+                email=email,
+                password=password1,
+                first_name=first_name,
+                last_name=last_name
+            )
             auth_login(request, user)
+            from django.contrib import messages
+            messages.success(request, f'¡Bienvenido a PetMarket, {user.first_name or user.username}! Tu cuenta ha sido creada exitosamente.')
+            return redirect('/')
+        except Exception as e:
+            from django.contrib import messages
+            messages.error(request, 'Hubo un error al crear tu cuenta. Intenta de nuevo.')
             return redirect('/')
     else:
         form = CustomUserCreationForm()
@@ -60,9 +106,16 @@ def register_page(request):
 
 def login_page(request):
     if request.method == 'POST':
-        form = CustomAuthenticationForm(request, data=request.POST)
-        if form.is_valid():
-            user = form.get_user()
+        username = request.POST.get('username')
+        password = request.POST.get('password')
+        
+        if not username or not password:
+            from django.contrib import messages
+            messages.error(request, 'Por favor, completa todos los campos.')
+            return redirect('/')
+        
+        user = authenticate(request, username=username, password=password)
+        if user is not None:
             auth_login(request, user)
             # Merge session cart into persistent cart for logged-in users
             session_cart = request.session.get('cart', {})
@@ -84,20 +137,27 @@ def login_page(request):
                     del request.session['cart']
                 except KeyError:
                     pass
+            
+            from django.contrib import messages
+            messages.success(request, f'¡Bienvenido de vuelta, {user.first_name or user.username}!')
             return redirect('/')
         else:
             from django.contrib import messages
-            messages.error(request, 'Credenciales inválidas. Intenta de nuevo.')
-            # If the POST comes from hero (no form rendering), redirect back to home
-            if request.META.get('HTTP_REFERER', '').endswith('/'):
-                return redirect('/')
+            messages.error(request, 'Usuario o contraseña incorrectos. Intenta de nuevo.')
+            return redirect('/')
     else:
         form = CustomAuthenticationForm()
     return render(request, 'accounts/login.html', {'form': form})
 
 
 def logout_page(request):
+    user_name = request.user.first_name or request.user.username if request.user.is_authenticated else ''
     auth_logout(request)
+    from django.contrib import messages
+    if user_name:
+        messages.success(request, f'¡Hasta luego, {user_name}! Vuelve pronto.')
+    else:
+        messages.success(request, '¡Hasta luego! Vuelve pronto.')
     return redirect('/')
 
 

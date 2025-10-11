@@ -1,18 +1,439 @@
 {% extends 'base.html' %}
-{% block title %}Inicio - PetMarket{% endblock %}
+{% load static %}
+{% block title %}PetMarket - Todo para tu mascota{% endblock %}
+
+{% block extra_head %}
+<style>
+  /* Hero Section con gradiente animado */
+  .hero-section {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background-size: 400% 400%;
+    animation: gradientShift 8s ease infinite;
+    min-height: 70vh;
+    position: relative;
+    overflow: hidden;
+  }
+  
+  @keyframes gradientShift {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+  }
+  
+  .hero-content {
+    position: relative;
+    z-index: 2;
+  }
+  
+  .floating-pets {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    z-index: 1;
+  }
+  
+  .floating-pet {
+    position: absolute;
+    font-size: 2rem;
+    opacity: 0.1;
+    animation: float 6s ease-in-out infinite;
+  }
+  
+  .floating-pet:nth-child(1) { top: 20%; left: 10%; animation-delay: 0s; }
+  .floating-pet:nth-child(2) { top: 60%; left: 80%; animation-delay: 2s; }
+  .floating-pet:nth-child(3) { top: 30%; left: 70%; animation-delay: 4s; }
+  .floating-pet:nth-child(4) { top: 80%; left: 20%; animation-delay: 1s; }
+  .floating-pet:nth-child(5) { top: 10%; left: 50%; animation-delay: 3s; }
+  
+  @keyframes float {
+    0%, 100% { transform: translateY(0px) rotate(0deg); }
+    50% { transform: translateY(-20px) rotate(5deg); }
+  }
+  
+  .feature-card {
+    background: white;
+    border-radius: 20px;
+    padding: 2rem;
+    text-align: center;
+    transition: all 0.3s ease;
+    border: none;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+  }
+  
+  .feature-card:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+  }
+  
+  .feature-icon {
+    width: 80px;
+    height: 80px;
+    background: linear-gradient(135deg, #ff6b6b, #ffd93d);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 1rem;
+    font-size: 2rem;
+    color: white;
+  }
+  
+  .stats-section {
+    background: linear-gradient(45deg, #f093fb 0%, #f5576c 50%, #4facfe 100%);
+    color: white;
+    padding: 4rem 0;
+  }
+  
+  .stat-card {
+    text-align: center;
+    padding: 2rem 1rem;
+  }
+  
+  .stat-number {
+    font-size: 3rem;
+    font-weight: 800;
+    display: block;
+  }
+  
+  .cta-section {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 4rem 0;
+    position: relative;
+  }
+  
+  .btn-glow {
+    background: linear-gradient(45deg, #ff6b6b, #ffd93d);
+    border: none;
+    color: white;
+    padding: 1rem 2rem;
+    border-radius: 50px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    transition: all 0.3s ease;
+    box-shadow: 0 10px 25px rgba(255, 107, 107, 0.3);
+  }
+  
+  .btn-glow:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 15px 35px rgba(255, 107, 107, 0.4);
+    color: white;
+  }
+  
+  .testimonial-card {
+    background: white;
+    border-radius: 20px;
+    padding: 2rem;
+    margin: 1rem;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+    text-align: center;
+  }
+  
+  .testimonial-avatar {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 1rem;
+    color: white;
+    font-size: 2rem;
+  }
+</style>
+{% endblock %}
 
 {% block content %}
-  <div class="row justify-content-center">
-    <div class="col-md-8">
-      <div class="card text-center shadow-sm">
-        <div class="card-body">
-          <h1 class="card-title">Bienvenido a PetMarket</h1>
-          <p class="card-text">API REST para la gestión de productos, clientes, empleados, pedidos y facturas.</p>
-          <p>Usa las rutas de la API bajo <code>/api/</code>. Ejemplo: <a href="/api/productos/">/api/productos/</a></p>
-          <a class="btn btn-primary" href="/productos/">Ver catálogo</a>
-          <a class="btn btn-outline-secondary ms-2" href="/admin/">Panel de administración</a>
+<!-- Hero Section -->
+<section class="hero-section d-flex align-items-center text-white">
+  <div class="floating-pets">
+    <div class="floating-pet">🐕</div>
+    <div class="floating-pet">🐱</div>
+    <div class="floating-pet">🐰</div>
+    <div class="floating-pet">🐦</div>
+    <div class="floating-pet">🐾</div>
+  </div>
+  
+  <div class="container hero-content">
+    <div class="row align-items-center">
+      <div class="col-lg-6">
+        <h1 class="display-3 fw-bold mb-4">
+          El paraíso de <span style="background: linear-gradient(45deg, #ffd93d, #ff6b6b); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">tu mascota</span>
+        </h1>
+        <p class="lead mb-4">
+          Descubre productos de la más alta calidad para perros, gatos y todas las mascotas. 
+          Tu compañero merece lo mejor, y nosotros se lo damos.
+        </p>
+        <div class="d-flex gap-3 flex-wrap">
+          <a href="/productos/" class="btn btn-glow btn-lg">
+            <i class="bi bi-shop me-2"></i>Explorar Catálogo
+          </a>
+          <a href="#features" class="btn btn-outline-light btn-lg">
+            <i class="bi bi-info-circle me-2"></i>Conocer Más
+          </a>
+        </div>
+      </div>
+      <div class="col-lg-6 text-center">
+        <div style="font-size: 15rem; opacity: 0.3;">
+          🐕‍🦺
         </div>
       </div>
     </div>
   </div>
+</section>
+
+<!-- Features Section -->
+<section id="features" class="py-5">
+  <div class="container">
+    <div class="row text-center mb-5">
+      <div class="col-12">
+        <h2 class="display-4 fw-bold text-primary mb-3">¿Por qué elegir PetMarket?</h2>
+        <p class="lead text-muted">Porque tu mascota se merece lo mejor del mundo</p>
+      </div>
+    </div>
+    
+    <div class="row g-4">
+      <div class="col-md-4">
+        <div class="feature-card">
+          <div class="feature-icon">
+            <i class="bi bi-heart-fill"></i>
+          </div>
+          <h4 class="fw-bold mb-3">Productos Premium</h4>
+          <p class="text-muted">
+            Seleccionamos cuidadosamente cada producto para garantizar 
+            la mejor calidad y nutrición para tu compañero.
+          </p>
+        </div>
+      </div>
+      
+      <div class="col-md-4">
+        <div class="feature-card">
+          <div class="feature-icon">
+            <i class="bi bi-lightning-fill"></i>
+          </div>
+          <h4 class="fw-bold mb-3">Entrega Rápida</h4>
+          <p class="text-muted">
+            Envíos seguros y rápidos. Tu mascota no puede esperar 
+            para recibir sus productos favoritos.
+          </p>
+        </div>
+      </div>
+      
+      <div class="col-md-4">
+        <div class="feature-card">
+          <div class="feature-icon">
+            <i class="bi bi-check-circle-fill"></i>
+          </div>
+          <h4 class="fw-bold mb-3">Garantía Total</h4>
+          <p class="text-muted">
+            100% de satisfacción garantizada. Si no estás feliz, 
+            nosotros tampoco. Devolución sin preguntas.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Stats Section -->
+<section class="stats-section">
+  <div class="container">
+    <div class="row">
+      <div class="col-md-3">
+        <div class="stat-card">
+          <span class="stat-number">10K+</span>
+          <p class="mb-0">Mascotas Felices</p>
+        </div>
+      </div>
+      <div class="col-md-3">
+        <div class="stat-card">
+          <span class="stat-number">500+</span>
+          <p class="mb-0">Productos</p>
+        </div>
+      </div>
+      <div class="col-md-3">
+        <div class="stat-card">
+          <span class="stat-number">98%</span>
+          <p class="mb-0">Satisfacción</p>
+        </div>
+      </div>
+      <div class="col-md-3">
+        <div class="stat-card">
+          <span class="stat-number">24/7</span>
+          <p class="mb-0">Atención</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Testimonials Section -->
+<section class="py-5 bg-light">
+  <div class="container">
+    <div class="row text-center mb-5">
+      <div class="col-12">
+        <h2 class="display-4 fw-bold text-primary mb-3">Lo que dicen nuestros clientes</h2>
+        <p class="lead text-muted">Miles de mascotas y sus familias confían en nosotros</p>
+      </div>
+    </div>
+    
+    <div class="row">
+      <div class="col-md-4">
+        <div class="testimonial-card">
+          <div class="testimonial-avatar">
+            <i class="bi bi-person-fill"></i>
+          </div>
+          <h5 class="fw-bold">María González</h5>
+          <p class="text-muted fst-italic">
+            "Mi Golden Retriever está más feliz que nunca. Los productos son de excelente calidad 
+            y la entrega súper rápida. ¡Recomiendo PetMarket al 100%!"
+          </p>
+          <div class="text-warning">
+            <i class="bi bi-star-fill"></i>
+            <i class="bi bi-star-fill"></i>
+            <i class="bi bi-star-fill"></i>
+            <i class="bi bi-star-fill"></i>
+            <i class="bi bi-star-fill"></i>
+          </div>
+        </div>
+      </div>
+      
+      <div class="col-md-4">
+        <div class="testimonial-card">
+          <div class="testimonial-avatar">
+            <i class="bi bi-person-fill"></i>
+          </div>
+          <h5 class="fw-bold">Carlos Rodríguez</h5>
+          <p class="text-muted fst-italic">
+            "Tengo 3 gatos y siempre encuentro todo lo que necesito. Los precios son justos 
+            y el servicio al cliente es increíble. ¡Gracias PetMarket!"
+          </p>
+          <div class="text-warning">
+            <i class="bi bi-star-fill"></i>
+            <i class="bi bi-star-fill"></i>
+            <i class="bi bi-star-fill"></i>
+            <i class="bi bi-star-fill"></i>
+            <i class="bi bi-star-fill"></i>
+          </div>
+        </div>
+      </div>
+      
+      <div class="col-md-4">
+        <div class="testimonial-card">
+          <div class="testimonial-avatar">
+            <i class="bi bi-person-fill"></i>
+          </div>
+          <h5 class="fw-bold">Ana Martínez</h5>
+          <p class="text-muted fst-italic">
+            "Mi conejo enano adora los productos que compro aquí. La variedad es impresionante 
+            y siempre hay ofertas geniales. ¡Es mi tienda favorita!"
+          </p>
+          <div class="text-warning">
+            <i class="bi bi-star-fill"></i>
+            <i class="bi bi-star-fill"></i>
+            <i class="bi bi-star-fill"></i>
+            <i class="bi bi-star-fill"></i>
+            <i class="bi bi-star-fill"></i>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA Section -->
+<section class="cta-section text-center">
+  <div class="container">
+    <div class="row justify-content-center">
+      <div class="col-lg-8">
+        <h2 class="display-4 fw-bold mb-4">
+          ¿Listo para hacer feliz a tu mascota?
+        </h2>
+        <p class="lead mb-4">
+          Únete a miles de familias que ya confían en PetMarket. 
+          Tu compañero peludo te lo va a agradecer.
+        </p>
+        <div class="d-flex justify-content-center gap-3 flex-wrap">
+          <a href="/productos/" class="btn btn-glow btn-lg">
+            <i class="bi bi-cart-fill me-2"></i>Comprar Ahora
+          </a>
+          <button class="btn btn-outline-light btn-lg" data-bs-toggle="modal" data-bs-target="#registerModal">
+            <i class="bi bi-person-plus me-2"></i>Crear Cuenta
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+  // Animación suave para los enlaces internos
+  document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+    anchor.addEventListener('click', function (e) {
+      e.preventDefault();
+      const target = document.querySelector(this.getAttribute('href'));
+      if (target) {
+        target.scrollIntoView({
+          behavior: 'smooth',
+          block: 'start'
+        });
+      }
+    });
+  });
+  
+  // Animación de contadores
+  function animateCounters() {
+    const counters = document.querySelectorAll('.stat-number');
+    counters.forEach(counter => {
+      const target = counter.textContent;
+      const isPercentage = target.includes('%');
+      const isTime = target.includes('/');
+      let finalNumber = parseInt(target.replace(/[^\d]/g, ''));
+      
+      if (!finalNumber) return;
+      
+      let currentNumber = 0;
+      const increment = finalNumber / 100;
+      
+      const timer = setInterval(() => {
+        currentNumber += increment;
+        if (currentNumber >= finalNumber) {
+          currentNumber = finalNumber;
+          clearInterval(timer);
+        }
+        
+        let display = Math.floor(currentNumber);
+        if (isPercentage) display += '%';
+        else if (isTime) display = '24/7';
+        else if (display >= 1000) display = Math.floor(display/1000) + 'K+';
+        else display += '+';
+        
+        counter.textContent = display;
+      }, 30);
+    });
+  }
+  
+  // Trigger animación cuando sea visible
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        animateCounters();
+        observer.unobserve(entry.target);
+      }
+    });
+  });
+  
+  const statsSection = document.querySelector('.stats-section');
+  if (statsSection) {
+    observer.observe(statsSection);
+  }
+</script>
 {% endblock %}
