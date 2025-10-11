@@ -1,0 +1,30 @@
+/* A few small tweaks to complement Bootstrap */
+/* A few small tweaks to complement Bootstrap */
+:root{
+	--primary: #2563eb; /* azul */
+	--accent: #10b981; /* verde */
+}
+body { background: #f8fafc; }
+.navbar-brand { font-weight: 700; color: var(--primary) !important }
+.card { border: 0; }
+.btn-primary { background: var(--primary); border-color: var(--primary); }
+.btn-success { background: var(--accent); border-color: var(--accent); }
+
+/* Hero styles */
+.site-hero { background: linear-gradient(135deg, rgba(37,99,235,0.95), rgba(16,185,129,0.95)); }
+.site-hero .card { background: rgba(255,255,255,0.95); }
+.site-hero .btn-light { color: var(--primary); }
+
+/* Form tweaks */
+.form-label { font-weight: 600; }
+.card .card-title { margin-bottom: 0.5rem; }
+
+/* Placeholder image */
+.placeholder-img { height:180px; background: linear-gradient(90deg,#eef2ff,#e6fffa); display:flex; align-items:center; justify-content:center; color:#94a3b8; }
+
+/* Dashboard */
+.dashboard-stats { display:flex; gap:1rem; }
+.dashboard-card { flex:1; padding:1rem; background:white; border-radius:8px; box-shadow:0 6px 18px rgba(15,23,42,0.06); }
+
+.catalog-card { transition: transform .12s ease; }
+.catalog-card:hover { transform: translateY(-6px); box-shadow:0 12px 30px rgba(15,23,42,0.08); }

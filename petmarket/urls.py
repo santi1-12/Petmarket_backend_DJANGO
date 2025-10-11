@@ -16,13 +16,28 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
+from .views import index
+from django.conf import settings
+from django.conf.urls.static import static
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path('', index, name='index'),
+    # Frontend product catalog
+    path('productos/', include('productos.front_urls')),
     path('api/accounts/', include('accounts.urls')),
     path('api/productos/', include('productos.urls')),
     path('api/clientes/', include('clientes.urls')),
     path('api/empleados/', include('empleados.urls')),
     path('api/pedidos/', include('pedidos.urls')),
     path('api/facturas/', include('facturas.urls')),
+]
+
+if settings.DEBUG:
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+
+# Web account pages
+urlpatterns += [
+    path('accounts/web/', include('accounts.front_urls')),
+    path('carrito/', include('carrito.urls')),
 ]

@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+{% block title %}Carrito{% endblock %}
+{% block content %}
+<h1>Tu carrito</h1>
+{% if items %}
+  <table class="table">
+    <thead><tr><th>Producto</th><th>Cantidad</th><th>Subtotal</th><th></th></tr></thead>
+    <tbody>
+    {% for it in items %}
+      <tr>
+        <td>{{ it.producto.nombre }}</td>
+        <td>{{ it.qty }}</td>
+        <td>${{ it.subtotal }}</td>
+        <td><a class="btn btn-sm btn-danger" href="/carrito/remove/{{ it.producto.pk }}/">Eliminar</a></td>
+      </tr>
+    {% endfor %}
+    </tbody>
+  </table>
+  <div class="text-end"><strong>Total: ${{ total }}</strong></div>
+{% else %}
+  <p>Tu carrito está vacío.</p>
+{% endif %}
+{% endblock %}

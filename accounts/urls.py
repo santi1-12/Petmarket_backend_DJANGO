@@ -4,6 +4,7 @@ from .views import RegisterView, LoginView, LogoutView, ProfileView
 app_name = 'accounts'
 
 urlpatterns = [
+    # API endpoints (JWT)
     path('register/', RegisterView.as_view(), name='register'),
     path('login/', LoginView.as_view(), name='login'),
     path('logout/', LogoutView.as_view(), name='logout'),

@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+{% block title %}Dashboard{% endblock %}
+{% block content %}
+  <h1>Panel</h1>
+  <div class="dashboard-stats mb-4">
+    <div class="dashboard-card">
+      <h5>Total productos</h5>
+      <div class="h2">{{ total }}</div>
+    </div>
+    <div class="dashboard-card">
+      <h5>Productos con poco stock</h5>
+      <div class="h2 text-danger">{{ low_stock }}</div>
+    </div>
+  </div>
+  <p>Accesos rápidos:</p>
+  <a class="btn btn-primary" href="/productos/crear/">Crear producto</a>
+{% endblock %}

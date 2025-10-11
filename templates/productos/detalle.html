@@ -1,0 +1,27 @@
+{% extends 'base.html' %}
+{% block title %}{{ producto.nombre }} - PetMarket{% endblock %}
+
+{% block content %}
+  <div class="card mx-auto" style="max-width:800px;">
+    <div class="card-body">
+      <h1 class="card-title">{{ producto.nombre }}</h1>
+      {% if producto.image %}
+        <img src="{{ producto.image.url }}" class="img-fluid mb-3" style="max-height:360px; object-fit:contain">
+      {% endif %}
+      <p class="text-muted">{{ producto.descripcion }}</p>
+      <p class="h4">Precio: ${{ producto.precio }}</p>
+      <p>Stock disponible: <strong>{{ producto.stock }}</strong></p>
+      <div class="d-flex gap-2">
+        <a class="btn btn-success" href="/productos/">Volver al catálogo</a>
+        <form method="post" action="/carrito/add/{{ producto.pk }}/" style="display:inline">
+          {% csrf_token %}
+          <button class="btn btn-primary">Añadir al carrito</button>
+        </form>
+        {% if request.user.is_authenticated and request.user.role in ('empleado', 'admin') %}
+          <a class="btn btn-outline-primary" href="/productos/{{ producto.pk }}/editar/">Editar</a>
+          <a class="btn btn-outline-danger" href="/productos/{{ producto.pk }}/eliminar/">Eliminar</a>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+{% endblock %}

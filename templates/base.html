@@ -1,0 +1,115 @@
+{% load static %}
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{% block title %}PetMarket{% endblock %}</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-..." crossorigin="anonymous">
+    <link rel="stylesheet" href="{% static 'css/site.css' %}">
+    {% block extra_head %}{% endblock %}
+  </head>
+  <body>
+    <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm">
+      <div class="container">
+        <a class="navbar-brand d-flex align-items-center" href="/" style="font-weight:700; color:var(--primary); font-size:1.15rem; text-decoration:none">
+          <!-- Text logo -->
+          <span style="background:linear-gradient(90deg,var(--primary),var(--accent)); -webkit-background-clip:text; background-clip:text; color:transparent">PetMarket</span>
+        </a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+          <ul class="navbar-nav ms-auto">
+            <li class="nav-item"><a class="nav-link" href="/productos/">Catálogo</a></li>
+            <li class="nav-item"><a class="nav-link" href="/admin/">Admin</a></li>
+            {% if request.user.is_authenticated %}
+              <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle" href="#" id="userMenu" role="button" data-bs-toggle="dropdown" aria-expanded="false">{{ request.user.username }}</a>
+                <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userMenu">
+                  <li><a class="dropdown-item" href="/accounts/profile/">Perfil</a></li>
+                  <li><a class="dropdown-item" href="/accounts/web/logout/">Cerrar sesión</a></li>
+                </ul>
+              </li>
+            {% else %}
+              <li class="nav-item"><a class="nav-link" href="/accounts/web/login/">Iniciar sesión</a></li>
+              <li class="nav-item"><a class="nav-link" href="/accounts/web/register/">Registrarse</a></li>
+            {% endif %}
+            <li class="nav-item">
+              <a class="nav-link position-relative" href="/carrito/">Carrito
+                {% if cart_count and cart_count > 0 %}
+                  <span class="badge bg-danger rounded-pill position-absolute" style="top:0; right:-10px;">{{ cart_count }}</span>
+                {% endif %}
+              </a>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </nav>
+
+    <!-- Hero / Header -->
+    <header class="site-hero py-5 text-white">
+      <div class="container">
+        <div class="row align-items-center">
+          <div class="col-md-7">
+            <h1 class="display-5 fw-bold">PetMarket</h1>
+            <p class="lead">Compra y vende productos para mascotas. Encuentra lo mejor para tu compañero.</p>
+            <p class="mt-3"><a href="/productos/" class="btn btn-light btn-lg">Ver catálogo</a></p>
+          </div>
+          <div class="col-md-5">
+            {% if not request.user.is_authenticated %}
+              <div class="card shadow-sm text-dark">
+                <div class="card-body">
+                  <h5 class="card-title">Inicia sesión</h5>
+                  <form method="post" action="/accounts/web/login/">
+                    {% csrf_token %}
+                    <div class="mb-2">
+                      <label class="form-label">Usuario</label>
+                      <input name="username" class="form-control" required />
+                    </div>
+                    <div class="mb-2">
+                      <label class="form-label">Contraseña</label>
+                      <input name="password" type="password" class="form-control" required />
+                    </div>
+                    <div class="d-flex justify-content-between align-items-center">
+                      <button class="btn btn-primary">Entrar</button>
+                      <a href="/accounts/web/register/" class="small">Crear cuenta</a>
+                    </div>
+                  </form>
+                </div>
+              </div>
+            {% else %}
+              <div class="card shadow-sm text-dark">
+                <div class="card-body">
+                  <h5 class="card-title">Bienvenido, {{ request.user.username }}</h5>
+                  <p class="mb-1">Rol: <strong>{{ request.user.role }}</strong></p>
+                  <a href="/accounts/web/profile/" class="btn btn-outline-light mt-2">Ver perfil</a>
+                </div>
+              </div>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <main class="py-4">
+      <div class="container">
+        {% if messages %}
+          {% for message in messages %}
+            <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+          {% endfor %}
+        {% endif %}
+        {% block content %}{% endblock %}
+      </div>
+    </main>
+
+    <footer class="text-muted py-4 bg-light">
+      <div class="container text-center small">© PetMarket</div>
+    </footer>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-..." crossorigin="anonymous"></script>
+    {% block extra_js %}{% endblock %}
+  </body>
+ </html>

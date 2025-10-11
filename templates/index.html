@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+{% block title %}Inicio - PetMarket{% endblock %}
+
+{% block content %}
+  <div class="row justify-content-center">
+    <div class="col-md-8">
+      <div class="card text-center shadow-sm">
+        <div class="card-body">
+          <h1 class="card-title">Bienvenido a PetMarket</h1>
+          <p class="card-text">API REST para la gestión de productos, clientes, empleados, pedidos y facturas.</p>
+          <p>Usa las rutas de la API bajo <code>/api/</code>. Ejemplo: <a href="/api/productos/">/api/productos/</a></p>
+          <a class="btn btn-primary" href="/productos/">Ver catálogo</a>
+          <a class="btn btn-outline-secondary ms-2" href="/admin/">Panel de administración</a>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock %}

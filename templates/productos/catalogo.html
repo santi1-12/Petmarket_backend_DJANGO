@@ -1,0 +1,68 @@
+{% extends 'base.html' %}
+{% block title %}Catálogo - PetMarket{% endblock %}
+
+{% block content %}
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <h1 class="mb-0">Catálogo de Productos</h1>
+    <form class="d-flex" method="get">
+      <input class="form-control me-2" type="search" placeholder="Buscar" aria-label="Buscar" name="q" value="{{ request.GET.q }}">
+      <button class="btn btn-outline-secondary" type="submit">Buscar</button>
+    </form>
+  </div>
+  <div class="row">
+    <div class="col-md-3 mb-3">
+      <div class="card p-3">
+        <h6>Filtros</h6>
+        <form method="get">
+          <div class="mb-2">
+            <label class="form-label">Categorías</label>
+            {% for cat in categorias %}
+              <div class="form-check">
+                <input class="form-check-input" name="categoria" type="checkbox" value="{{ cat }}" id="cat-{{ forloop.counter }}" {% if cat in selected_categories %}checked{% endif %}>
+                <label class="form-check-label" for="cat-{{ forloop.counter }}">{{ cat }}</label>
+              </div>
+            {% endfor %}
+          </div>
+          <div class="mb-2">
+            <label class="form-label">Precio min</label>
+            <input name="min_price" class="form-control" value="{{ request.GET.min_price }}">
+          </div>
+          <div class="mb-2">
+            <label class="form-label">Precio max</label>
+            <input name="max_price" class="form-control" value="{{ request.GET.max_price }}">
+          </div>
+          <button class="btn btn-primary" type="submit">Aplicar</button>
+        </form>
+      </div>
+    </div>
+    <div class="col-md-9">
+      <div class="row row-cols-1 row-cols-md-3 g-4">
+    {% for p in productos %}
+      <div class="col">
+        <div class="card h-100 catalog-card">
+          {% if p.image %}
+            <img src="{{ p.image.url }}" class="card-img-top" style="height:180px; object-fit:cover">
+          {% else %}
+            <div class="placeholder-img">Sin imagen</div>
+          {% endif %}
+          <div class="card-body d-flex flex-column">
+            <h5 class="card-title"><a href="/productos/{{ p.id }}/" class="stretched-link text-decoration-none">{{ p.nombre }}</a></h5>
+            <p class="card-text text-muted">{{ p.descripcion|truncatechars:120 }}</p>
+            <div class="mt-auto">
+              <div class="fw-bold">${{ p.precio }}</div>
+              <small class="text-secondary">Stock: {{ p.stock }}</small>
+              <form method="post" action="/carrito/add/{{ p.pk }}/" class="mt-2">
+                {% csrf_token %}
+                <button class="btn btn-sm btn-primary">Añadir</button>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+    {% empty %}
+      <p>No hay productos disponibles.</p>
+    {% endfor %}
+      </div>
+    </div>
+  </div>
+{% endblock %}
