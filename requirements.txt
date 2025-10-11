@@ -1,62 +1,62 @@
 # ========================================
-# 🐾 PETMARKET - DEPENDENCIAS DEL PROYECTO
+# PETMARKET - DEPENDENCIAS DEL PROYECTO
 # ========================================
 
-# ✨ Framework Principal - Django y REST Framework
+# Framework Principal - Django y REST Framework
 Django>=5.2                          # Framework web principal
 djangorestframework>=3.16             # API REST framework
 django-cors-headers>=4.0             # CORS para APIs (frontend separado)
 django-environ>=0.11                 # Variables de entorno
 
-# 🔐 Autenticación y Seguridad
+# Autenticación y Seguridad
 djangorestframework-simplejwt>=5.3   # JWT para autenticación de API
 PyJWT>=2.8                          # Librería JWT base
 
-# 🗄️ Base de Datos y ORM
+# Base de Datos y ORM
 psycopg2-binary>=2.9                 # Soporte PostgreSQL (producción)
 
-# 📄 Generación de PDFs y Reportes
+# Generación de PDFs y Reportes
 reportlab>=4.0                       # Generación de PDFs para facturas
 Pillow>=10.0                        # Manejo de imágenes y gráficos
 
-# 💳 Procesamiento de Pagos
+# Procesamiento de Pagos
 mercadopago>=1.0                     # SDK oficial de MercadoPago
 
-# 📚 Documentación de API
+# Documentación de API
 drf-spectacular>=0.26                # Documentación OpenAPI/Swagger automática
 
-# 🧪 Desarrollo y Testing
+# Desarrollo y Testing
 pytest-django>=4.5                  # Framework de testing avanzado
 factory-boy>=3.3                    # Generación de datos de prueba
 coverage>=7.0                       # Cobertura de código en tests
 django-debug-toolbar>=4.2           # Toolbar de debug para desarrollo
 
-# 🚀 Producción y Performance
+# Producción y Performance
 gunicorn>=21.0                       # Servidor WSGI para producción
 whitenoise>=6.5                     # Servir archivos estáticos en producción
 redis>=5.0                          # Cache y sessions (opcional)
 django-redis>=5.3                   # Integración Redis con Django
 
-# 🔧 Utilidades y Herramientas
+# Utilidades y Herramientas
 python-decouple>=3.8                # Gestión de variables de entorno
 requests>=2.31                      # Cliente HTTP para APIs externas
 django-extensions>=3.2              # Comandos adicionales de Django
 python-dotenv>=1.0                  # Carga de archivos .env
 
-# 📧 Email y Notificaciones (opcional)
+# Email y Notificaciones (opcional)
 django-anymail>=10.0                # Integración con servicios de email
 
-# 📊 Monitoreo y Logs (opcional)
+# Monitoreo y Logs (opcional)
 sentry-sdk>=1.32                    # Monitoreo de errores en producción
 
-# 🎨 Frontend y Assets (opcional)
+# Frontend y Assets (opcional)
 django-compressor>=4.4              # Compresión de CSS/JS
 django-sass-processor>=1.2          # Compilación de SASS
 
-# ⚡ Performance Adicional (opcional)
+# Performance Adicional (opcional)
 django-cachalot>=2.6                # Cache automático de queries ORM
 django-storages>=1.14               # Almacenamiento en la nube (AWS S3, etc.)
 
-# 🔍 Análisis y SEO (opcional)
+# Análisis y SEO (opcional)
 django-meta>=2.0                    # Meta tags dinámicos
 django-sitemap>=2.2                 # Generación automática de sitemaps

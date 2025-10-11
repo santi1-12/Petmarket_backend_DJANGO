@@ -1,22 +1,22 @@
-# 🐾 PetMarket - Tu tienda de mascotas online
+# PetMarket - Tu tienda de mascotas online
 
 ![PetMarket Logo](static/img/logo.png)
 
 PetMarket es una plataforma completa de comercio electrónico especializada en productos para mascotas. Desarrollada con Django y Django REST Framework, ofrece tanto una interfaz web moderna como una API REST completa para gestionar productos, usuarios, carrito de compras y pedidos.
 
-## 🌟 Características Principales
+## Características Principales
 
-- 🎨 **Interfaz Web Moderna**: Landing page atractiva con diseño responsive
-- 🔐 **Sistema de Autenticación**: Registro, login y gestión de usuarios con JWT
-- 🛒 **Carrito de Compras**: Funcionalidad completa de e-commerce
-- 📦 **Gestión de Productos**: CRUD completo con categorías y filtros
-- 🏪 **Catálogo Web**: Vista de productos con búsqueda y paginación
-- 📱 **API REST**: Endpoints completos para desarrollo de apps móviles
-- 👥 **Múltiples Roles**: Clientes, empleados y administradores
-- 💳 **Integración de Pagos**: Soporte para MercadoPago
-- 📄 **Generación de PDFs**: Facturas y reportes automáticos
+- **Interfaz Web Moderna**: Landing page atractiva con diseño responsive
+- **Sistema de Autenticación**: Registro, login y gestión de usuarios con JWT
+- **Carrito de Compras**: Funcionalidad completa de e-commerce
+- **Gestión de Productos**: CRUD completo con categorías y filtros
+- **Catálogo Web**: Vista de productos con búsqueda y paginación
+- **API REST**: Endpoints completos para desarrollo de apps móviles
+- **Múltiples Roles**: Clientes, empleados y administradores
+- **Integración de Pagos**: Soporte para MercadoPago
+- **Generación de PDFs**: Facturas y reportes automáticos
 
-## 🚀 Tecnologías Utilizadas
+## Tecnologías Utilizadas
 
 - **Backend**: Django 5.2 + Django REST Framework
 - **Base de Datos**: SQLite (desarrollo) / PostgreSQL (producción)
@@ -26,13 +26,13 @@ PetMarket es una plataforma completa de comercio electrónico especializada en p
 - **PDFs**: ReportLab
 - **Despliegue**: Gunicorn + WhiteNoise
 
-## 📋 Requisitos del Sistema
+## Requisitos del Sistema
 
 - Python 3.8 o superior
 - pip (gestor de paquetes de Python)
 - Virtualenv (recomendado)
 
-## ⚡ Instalación Rápida
+## Instalación Rápida
 
 ### 1. Clonar el repositorio
 ```bash
@@ -73,7 +73,7 @@ python manage.py runserver
 
 ¡Listo! Visita `http://127.0.0.1:8000` para ver PetMarket en acción.
 
-## 🎯 URLs Principales
+## URLs Principales
 
 ### Interfaz Web
 - **Inicio**: `http://127.0.0.1:8000/`
@@ -85,9 +85,9 @@ python manage.py runserver
 - **Documentación API**: `http://127.0.0.1:8000/api/schema/swagger-ui/`
 - **Base API**: `http://127.0.0.1:8000/api/`
 
-## 📚 Documentación de la API
+## Documentación de la API
 
-### 🔐 Autenticación
+### Autenticación
 
 #### Registro de Usuario
 ```http
@@ -133,7 +133,7 @@ GET /api/accounts/profile/
 Authorization: Bearer <access_token>
 ```
 
-### 🛍️ Productos
+### Productos
 
 #### Listar Productos
 ```http
@@ -167,7 +167,7 @@ Content-Type: application/json
 }
 ```
 
-### 🛒 Carrito de Compras
+### Carrito de Compras
 
 #### Ver Carrito
 ```http
@@ -210,7 +210,7 @@ DELETE /api/carrito/limpiar/
 Authorization: Bearer <access_token>
 ```
 
-### 📦 Pedidos
+### Pedidos
 
 #### Crear Pedido
 ```http
@@ -230,7 +230,7 @@ GET /api/pedidos/
 Authorization: Bearer <access_token>
 ```
 
-## 🎨 Interfaz Web
+## Interfaz Web
 
 ### Características de la Landing Page
 - **Hero Section**: Presentación atractiva con animaciones CSS
@@ -244,7 +244,7 @@ Authorization: Bearer <access_token>
 - **Validación en tiempo real**: JavaScript para mejor UX
 - **Mensajes de feedback**: Notificaciones elegantes para el usuario
 
-## 🔧 Configuración Avanzada
+## Configuración Avanzada
 
 ### Variables de Entorno
 Crea un archivo `.env` en la raíz del proyecto:
@@ -284,7 +284,7 @@ DATABASES = {
 }
 ```
 
-## 📊 Estructura del Proyecto
+## Estructura del Proyecto
 
 ```
 petmarket/
@@ -301,7 +301,7 @@ petmarket/
 └── petmarket/         # Configuración principal
 ```
 
-## 🧪 Testing
+## Testing
 
 ### Ejecutar Tests
 ```bash
@@ -325,7 +325,7 @@ python manage.py loaddata fixtures/productos.json
 python manage.py loaddata fixtures/usuarios.json
 ```
 
-## 🚀 Despliegue en Producción
+## Despliegue en Producción
 
 ### Preparación
 ```bash
@@ -362,7 +362,7 @@ EXPOSE 8000
 CMD ["gunicorn", "petmarket.wsgi:application", "--bind", "0.0.0.0:8000"]
 ```
 
-## 🤝 Contribuir
+## Contribuir
 
 1. Haz fork del proyecto
 2. Crea una rama para tu feature (`git checkout -b feature/nueva-caracteristica`)
@@ -370,7 +370,7 @@ CMD ["gunicorn", "petmarket.wsgi:application", "--bind", "0.0.0.0:8000"]
 4. Push a la rama (`git push origin feature/nueva-caracteristica`)
 5. Abre un Pull Request
 
-## 📝 Ejemplos de Uso con curl
+## Ejemplos de Uso con curl
 
 ### Registro y Login
 ```bash
@@ -412,7 +412,7 @@ curl -X POST http://127.0.0.1:8000/api/carrito/agregar/ \
   }'
 ```
 
-## 🆘 Solución de Problemas Comunes
+## Solución de Problemas Comunes
 
 ### Error de Migración
 ```bash
@@ -431,19 +431,9 @@ python manage.py findstatic css/site.css
 # Verificar configuración de SimpleJWT en settings.py
 ```
 
-## 📞 Soporte
-
-- **Documentación**: Este README
-- **Issues**: Crear issue en el repositorio
-- **Email**: soporte@petmarket.com (ejemplo)
-
-## 📄 Licencia
-
-Este proyecto está bajo la Licencia MIT. Ver archivo `LICENSE` para más detalles.
-
 ---
 
-**¡Gracias por usar PetMarket! 🐾**
+**¡Gracias por usar PetMarket!**
 
-*Desarrollado con ❤️ para amantes de las mascotas*
+*Desarrollado con cariño para amantes de las mascotas*
 
