@@ -30,6 +30,11 @@
     </tbody>
   </table>
   <div class="text-end"><strong>Total: ${{ total }}</strong></div>
+  <div class="text-end mt-3">
+    {% if request.user.is_authenticated and items %}
+      <a href="/carrito/finalizar/" class="btn btn-success">Finalizar compra</a>
+    {% endif %}
+  </div>
 {% else %}
   <p>Tu carrito está vacío.</p>
 {% endif %}

@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+
+{% block title %}Gestión de Categorías - Admin{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h2>Gestión de Categorías</h2>
+        <div>
+            <a href="{% url 'admin_categoria_create' %}" class="btn btn-primary">Agregar Categoría</a>
+            <a href="{% url 'admin_productos_list' %}" class="btn btn-outline-secondary">Volver a Productos</a>
+        </div>
+    </div>
+
+    {% if categorias %}
+    <div class="table-responsive">
+        <table class="table table-striped table-hover">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Nombre</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for categoria in categorias %}
+                <tr>
+                    <td>{{ categoria.id }}</td>
+                    <td>{{ categoria.nombre }}</td>
+                    <td>
+                        <a href="{% url 'admin_categoria_edit' categoria.id %}" class="btn btn-sm btn-warning">Editar</a>
+                        <a href="{% url 'admin_categoria_delete' categoria.id %}" class="btn btn-sm btn-danger">Eliminar</a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+    <div class="alert alert-info">No hay categorías registradas.</div>
+    {% endif %}
+</div>
+{% endblock %}

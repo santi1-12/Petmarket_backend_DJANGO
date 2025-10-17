@@ -1,0 +1,267 @@
+{% extends 'base.html' %}
+{% block title %}Panel de Admin{% endblock %}
+{% block content %}
+<div class="container-fluid py-4">
+  <!-- Barra de perfil del admin -->
+  <div class="row mb-4">
+    <div class="col-12">
+      <div class="card border-0 shadow-sm" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 15px;">
+        <div class="card-body py-3">
+          <div class="d-flex justify-content-between align-items-center">
+            <div class="d-flex align-items-center">
+              <div class="rounded-circle bg-white d-flex align-items-center justify-content-center" style="width: 60px; height: 60px;">
+                <i class="bi bi-shield-lock-fill" style="font-size: 2rem; color: #667eea;"></i>
+              </div>
+              <div class="ms-3 text-white">
+                <h4 class="mb-0 fw-bold">{{ request.user.get_full_name|default:request.user.username }}</h4>
+                <div class="d-flex align-items-center">
+                  <span class="badge bg-danger me-2">ADMINISTRADOR</span>
+                  <small class="opacity-75">{{ request.user.email }}</small>
+                </div>
+              </div>
+            </div>
+            <div class="text-white text-end d-none d-md-block">
+              <small class="opacity-75 d-block">Acceso completo al sistema</small>
+              <small class="opacity-75">{{ request.user.last_login|date:"d/m/Y H:i" }}</small>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="row mb-4">
+    <div class="col-12">
+      <h2 class="mb-0"><i class="bi bi-speedometer2"></i> Panel de Administración</h2>
+      <p class="text-muted">Gestiona tu tienda desde un solo lugar</p>
+    </div>
+  </div>
+
+  <ul class="nav nav-pills mb-4" id="adminTab" role="tablist">
+    <li class="nav-item" role="presentation">
+      <button class="nav-link active" id="control-tab" data-bs-toggle="tab" data-bs-target="#control" type="button" role="tab">
+        <i class="bi bi-graph-up"></i> Panel de Control
+      </button>
+    </li>
+    <li class="nav-item" role="presentation">
+      <button class="nav-link" id="clientes-tab" data-bs-toggle="tab" data-bs-target="#clientes" type="button" role="tab">
+        <i class="bi bi-people"></i> Clientes
+      </button>
+    </li>
+    <li class="nav-item" role="presentation">
+      <button class="nav-link" id="empleados-tab" data-bs-toggle="tab" data-bs-target="#empleados" type="button" role="tab">
+        <i class="bi bi-person-badge"></i> Empleados
+      </button>
+    </li>
+    <li class="nav-item" role="presentation">
+      <button class="nav-link" id="productos-tab" data-bs-toggle="tab" data-bs-target="#productos" type="button" role="tab">
+        <i class="bi bi-box-seam"></i> Productos
+      </button>
+    </li>
+    <li class="nav-item" role="presentation">
+      <button class="nav-link" id="facturas-tab" data-bs-toggle="tab" data-bs-target="#facturas" type="button" role="tab">
+        <i class="bi bi-receipt"></i> Facturas
+      </button>
+    </li>
+    <li class="nav-item" role="presentation">
+      <a class="nav-link" href="/">
+        <i class="bi bi-house-door"></i> Inicio Público
+      </a>
+    </li>
+  </ul>
+
+  <div class="tab-content" id="adminTabContent">
+    <!-- Panel de Control -->
+    <div class="tab-pane fade show active" id="control" role="tabpanel">
+      <div class="row g-3">
+        <div class="col-md-3">
+          <div class="card bg-primary text-white h-100">
+            <div class="card-body">
+              <div class="d-flex justify-content-between align-items-center">
+                <div>
+                  <h6 class="card-title mb-0">Total Clientes</h6>
+                  <h2 class="mb-0">{{ clientes|length }}</h2>
+                </div>
+                <i class="bi bi-people" style="font-size: 2.5rem; opacity: 0.5;"></i>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-3">
+          <div class="card bg-success text-white h-100">
+            <div class="card-body">
+              <div class="d-flex justify-content-between align-items-center">
+                <div>
+                  <h6 class="card-title mb-0">Total Empleados</h6>
+                  <h2 class="mb-0">{{ empleados|length }}</h2>
+                </div>
+                <i class="bi bi-person-badge" style="font-size: 2.5rem; opacity: 0.5;"></i>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-3">
+          <div class="card bg-info text-white h-100">
+            <div class="card-body">
+              <div class="d-flex justify-content-between align-items-center">
+                <div>
+                  <h6 class="card-title mb-0">Total Productos</h6>
+                  <h2 class="mb-0">{{ productos|length }}</h2>
+                </div>
+                <i class="bi bi-box-seam" style="font-size: 2.5rem; opacity: 0.5;"></i>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-3">
+          <div class="card bg-warning text-dark h-100">
+            <div class="card-body">
+              <div class="d-flex justify-content-between align-items-center">
+                <div>
+                  <h6 class="card-title mb-0">Total Facturas</h6>
+                  <h2 class="mb-0">{{ facturas|length }}</h2>
+                </div>
+                <i class="bi bi-receipt" style="font-size: 2.5rem; opacity: 0.5;"></i>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="row mt-4">
+        <div class="col-12">
+          <div class="card">
+            <div class="card-header">
+              <h5 class="mb-0"><i class="bi bi-clipboard-data"></i> Accesos Rápidos</h5>
+            </div>
+            <div class="card-body">
+              <div class="row g-3">
+                <div class="col-md-4">
+                  <a href="{% url 'empleados:clientes_list' %}" class="btn btn-outline-primary w-100">
+                    <i class="bi bi-people"></i> Ver Todos los Clientes
+                  </a>
+                </div>
+                <div class="col-md-4">
+                  <a href="{% url 'empleados:empleados_list' %}" class="btn btn-outline-success w-100">
+                    <i class="bi bi-person-badge"></i> Ver Todos los Empleados
+                  </a>
+                </div>
+                <div class="col-md-4">
+                  <a href="{% url 'admin_productos_list' %}" class="btn btn-outline-info w-100">
+                    <i class="bi bi-box-seam"></i> Ver Todos los Productos
+                  </a>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Gestión de Clientes -->
+    <div class="tab-pane fade" id="clientes" role="tabpanel">
+      <div class="card">
+        <div class="card-header d-flex justify-content-between align-items-center">
+          <h5 class="mb-0"><i class="bi bi-people"></i> Gestión de Clientes</h5>
+          <a href="{% url 'empleados:cliente_create' %}" class="btn btn-primary btn-sm">
+            <i class="bi bi-plus-circle"></i> Agregar Cliente
+          </a>
+        </div>
+        <div class="card-body">
+          <a href="{% url 'empleados:clientes_list' %}" class="btn btn-outline-primary">
+            <i class="bi bi-list-ul"></i> Ver Listado Completo de Clientes
+          </a>
+          <p class="mt-3 text-muted">Total de clientes registrados: <strong>{{ clientes|length }}</strong></p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Gestión de Empleados -->
+    <div class="tab-pane fade" id="empleados" role="tabpanel">
+      <div class="card">
+        <div class="card-header d-flex justify-content-between align-items-center">
+          <h5 class="mb-0"><i class="bi bi-person-badge"></i> Gestión de Empleados</h5>
+          <a href="{% url 'empleados:empleado_create' %}" class="btn btn-success btn-sm">
+            <i class="bi bi-plus-circle"></i> Agregar Empleado
+          </a>
+        </div>
+        <div class="card-body">
+          <a href="{% url 'empleados:empleados_list' %}" class="btn btn-outline-success">
+            <i class="bi bi-list-ul"></i> Ver Listado Completo de Empleados
+          </a>
+          <p class="mt-3 text-muted">Total de empleados registrados: <strong>{{ empleados|length }}</strong></p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Gestión de Productos -->
+    <div class="tab-pane fade" id="productos" role="tabpanel">
+      <div class="card">
+        <div class="card-header d-flex justify-content-between align-items-center">
+          <h5 class="mb-0"><i class="bi bi-box-seam"></i> Gestión de Productos</h5>
+          <div>
+            <a href="/productos/admin/create/" class="btn btn-success btn-sm me-2">
+              <i class="bi bi-plus-circle"></i> Agregar Producto
+            </a>
+            <a href="/productos/admin/categorias/" class="btn btn-secondary btn-sm">
+              <i class="bi bi-tags"></i> Categorías
+            </a>
+          </div>
+        </div>
+        <div class="card-body">
+          <a href="{% url 'admin_productos_list' %}" class="btn btn-outline-info">
+            <i class="bi bi-list-ul"></i> Ver Listado Completo de Productos
+          </a>
+          <p class="mt-3 text-muted">Total de productos registrados: <strong>{{ productos|length }}</strong></p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Facturas -->
+    <div class="tab-pane fade" id="facturas" role="tabpanel">
+      <div class="card">
+        <div class="card-header">
+          <h5 class="mb-0"><i class="bi bi-receipt"></i> Gestión de Facturas</h5>
+        </div>
+        <div class="card-body">
+          <p class="text-muted">Módulo de facturación manual en desarrollo.</p>
+          <p class="mt-3 text-muted">Total de facturas: <strong>{{ facturas|length }}</strong></p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+  .nav-pills .nav-link {
+    color: #666;
+    border-radius: 8px;
+    padding: 10px 20px;
+    margin-right: 5px;
+    transition: all 0.3s ease;
+  }
+  .nav-pills .nav-link:hover {
+    background-color: #f8f9fa;
+    color: #0d6efd;
+  }
+  .nav-pills .nav-link.active {
+    background-color: #0d6efd;
+    color: white;
+  }
+  .card {
+    border: none;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    border-radius: 12px;
+    transition: transform 0.2s ease;
+  }
+  .card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+  }
+  .card-header {
+    background-color: #f8f9fa;
+    border-bottom: 2px solid #e9ecef;
+    border-radius: 12px 12px 0 0 !important;
+    font-weight: 600;
+  }
+</style>
+{% endblock %}

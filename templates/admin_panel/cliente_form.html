@@ -1,0 +1,7 @@
+<h5>{% if cliente %}Editar cliente{% else %}Agregar cliente{% endif %}</h5>
+<form method="post">
+  {% csrf_token %}
+  {{ form.as_p }}
+  <button class="btn btn-primary">Guardar</button>
+  <a href="{% url 'empleados:admin_dashboard' %}?tab=clientes" class="btn btn-secondary">Cancelar</a>
+</form>

@@ -1,0 +1,8 @@
+<h5>Detalle de cliente</h5>
+<ul class="list-group mb-3">
+  <li class="list-group-item"><strong>Nombre:</strong> {{ cliente.nombre }}</li>
+  <li class="list-group-item"><strong>Email:</strong> {{ cliente.email }}</li>
+  <li class="list-group-item"><strong>Teléfono:</strong> {{ cliente.telefono }}</li>
+  <li class="list-group-item"><strong>Dirección:</strong> {{ cliente.direccion }}</li>
+</ul>
+<a href="{% url 'empleados:admin_dashboard' %}?tab=clientes" class="btn btn-secondary">Volver</a>

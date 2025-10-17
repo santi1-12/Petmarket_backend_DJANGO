@@ -39,7 +39,7 @@
 
           <ul class="navbar-nav ms-auto align-items-center">
             <li class="nav-item"><a class="nav-link text-white fw-bold" href="/productos/" style="text-shadow: 0 1px 2px rgba(0,0,0,0.2); transition: all 0.3s ease;" onMouseOver="this.style.color='#ffd93d'" onMouseOut="this.style.color='white'">Catálogo</a></li>
-            <li class="nav-item d-none d-lg-block"><a class="nav-link text-white fw-bold" href="/admin/" style="text-shadow: 0 1px 2px rgba(0,0,0,0.2); transition: all 0.3s ease;" onMouseOver="this.style.color='#ffd93d'" onMouseOut="this.style.color='white'">Admin</a></li>
+            
             <li class="nav-item">
               <a class="nav-link position-relative text-white" href="/carrito/" style="font-size: 1.3rem; text-shadow: 0 1px 2px rgba(0,0,0,0.2); transition: all 0.3s ease;" onMouseOver="this.style.color='#ffd93d'" onMouseOut="this.style.color='white'"> 
                 <i class="bi bi-cart4"></i>
@@ -53,10 +53,41 @@
                 <div class="dropdown">
                   <a class="btn btn-sm dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" style="background: rgba(255,255,255,0.2); color: white; border: 2px solid rgba(255,255,255,0.3); border-radius: 25px; backdrop-filter: blur(10px); font-weight: 600; text-shadow: 0 1px 2px rgba(0,0,0,0.2);">
                     <i class="bi bi-person-circle me-1"></i>{{ request.user.username }}
+                    {% if request.user.is_superuser or request.user.role == 'admin' %}
+                      <span class="badge bg-danger ms-1" style="font-size: 0.65rem;">ADMIN</span>
+                    {% elif request.user.role == 'empleado' %}
+                      <span class="badge bg-info ms-1" style="font-size: 0.65rem;">EMPLEADO</span>
+                    {% endif %}
                   </a>
-                  <ul class="dropdown-menu dropdown-menu-end" style="border-radius: 15px; border: none; box-shadow: 0 10px 30px rgba(0,0,0,0.15); backdrop-filter: blur(10px);">
-                    <li><a class="dropdown-item" href="/accounts/web/profile/" style="border-radius: 10px; transition: all 0.3s ease;"><i class="bi bi-person me-2"></i>Perfil</a></li>
-                    <li><a class="dropdown-item" href="/accounts/web/logout/" style="border-radius: 10px; transition: all 0.3s ease;"><i class="bi bi-box-arrow-right me-2"></i>Cerrar sesión</a></li>
+                  <ul class="dropdown-menu dropdown-menu-end" style="border-radius: 15px; border: none; box-shadow: 0 10px 30px rgba(0,0,0,0.15); backdrop-filter: blur(10px); min-width: 280px;">
+                    <li class="px-3 py-2 border-bottom">
+                      <div class="d-flex align-items-center">
+                        <i class="bi bi-person-circle" style="font-size: 2rem; color: #667eea;"></i>
+                        <div class="ms-2">
+                          <div class="fw-bold">{{ request.user.get_full_name|default:request.user.username }}</div>
+                          <small class="text-muted">{{ request.user.email }}</small>
+                        </div>
+                      </div>
+                    </li>
+                    
+                    {% if request.user.is_superuser or request.user.role == 'admin' %}
+                    <li><h6 class="dropdown-header"><i class="bi bi-shield-lock me-2"></i>Panel de Administración</h6></li>
+                    <li><a class="dropdown-item" href="{% url 'empleados:admin_dashboard' %}" style="border-radius: 10px;"><i class="bi bi-speedometer2 me-2 text-danger"></i>Dashboard Admin</a></li>
+                    <li><a class="dropdown-item" href="{% url 'empleados:clientes_list' %}" style="border-radius: 10px;"><i class="bi bi-people me-2 text-primary"></i>Gestión de Clientes</a></li>
+                    <li><a class="dropdown-item" href="{% url 'empleados:empleados_list' %}" style="border-radius: 10px;"><i class="bi bi-person-badge me-2 text-success"></i>Gestión de Empleados</a></li>
+                    <li><a class="dropdown-item" href="{% url 'admin_productos_list' %}" style="border-radius: 10px;"><i class="bi bi-box-seam me-2 text-info"></i>Gestión de Productos</a></li>
+                    <li><a class="dropdown-item" href="{% url 'admin_categorias_list' %}" style="border-radius: 10px;"><i class="bi bi-tags me-2 text-warning"></i>Gestión de Categorías</a></li>
+                    <li><hr class="dropdown-divider"></li>
+                    {% elif request.user.role == 'empleado' %}
+                    <li><h6 class="dropdown-header"><i class="bi bi-briefcase me-2"></i>Panel de Empleado</h6></li>
+                    <li><a class="dropdown-item" href="{% url 'empleados:dashboard' %}" style="border-radius: 10px;"><i class="bi bi-speedometer2 me-2 text-info"></i>Dashboard Empleado</a></li>
+                    <li><hr class="dropdown-divider"></li>
+                    {% endif %}
+                    
+                    <li><a class="dropdown-item" href="/accounts/web/profile/" style="border-radius: 10px;"><i class="bi bi-person me-2"></i>Mi Perfil</a></li>
+                    <li><a class="dropdown-item" href="/" style="border-radius: 10px;"><i class="bi bi-house me-2"></i>Inicio</a></li>
+                    <li><hr class="dropdown-divider"></li>
+                    <li><a class="dropdown-item text-danger" href="/accounts/web/logout/" style="border-radius: 10px;"><i class="bi bi-box-arrow-right me-2"></i>Cerrar sesión</a></li>
                   </ul>
                 </div>
               {% else %}
@@ -65,7 +96,7 @@
                     <i class="bi bi-person-plus me-1"></i>Registro
                   </button>
                   <button class="btn" data-bs-toggle="modal" data-bs-target="#loginModal" style="background: linear-gradient(45deg, #ffd93d, #ff6b6b); color: #333; border: none; border-radius: 25px; padding: 0.5rem 1.2rem; font-weight: 700; box-shadow: 0 4px 15px rgba(255, 217, 61, 0.4); transition: all 0.3s ease;" onMouseOver="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 6px 20px rgba(255, 217, 61, 0.5)'" onMouseOut="this.style.transform='translateY(0px)'; this.style.boxShadow='0 4px 15px rgba(255, 217, 61, 0.4)'">
-                    <i class="bi bi-box-arrow-in-right me-1"></i>Entrar
+                    <i class="bi bi-box-arrow-in-right me-1"></i>Iniciar sesión
                   </button>
                 </div>
               {% endif %}
@@ -102,7 +133,7 @@
                 <div class="d-flex gap-2">
                   <button type="button" class="btn btn-light" onclick="switchToRegister()" style="border-radius: 25px; color: #333; font-weight: 600;">Crear cuenta</button>
                   <button type="submit" class="btn" style="background: linear-gradient(45deg, #ffd93d, #ff6b6b); color: #333; border: none; border-radius: 25px; padding: 0.6rem 1.5rem; font-weight: 700; box-shadow: 0 4px 15px rgba(255, 217, 61, 0.4);">
-                    <i class="bi bi-box-arrow-in-right me-2"></i>Entrar
+                    <i class="bi bi-box-arrow-in-right me-2"></i>Iniciar sesión
                   </button>
                 </div>
               </div>
@@ -264,9 +295,127 @@
             }
           });
         }
+
+        // Función para obtener el token CSRF
+        function getCookie(name) {
+          let cookieValue = null;
+          if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+              const cookie = cookies[i].trim();
+              if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+              }
+            }
+          }
+          return cookieValue;
+        }
+
+        // Actualizar todos los campos hidden de CSRF en la página
+        function updateCSRFTokens() {
+          const csrftoken = getCookie('csrftoken');
+          if (csrftoken) {
+            document.querySelectorAll('input[name="csrfmiddlewaretoken"]').forEach(function(input) {
+              input.value = csrftoken;
+            });
+          }
+        }
+
+        // Actualizar tokens al cargar la página
+        updateCSRFTokens();
+
+        // Configurar CSRF token para todas las peticiones AJAX
+        const csrftoken = getCookie('csrftoken');
+        if (csrftoken) {
+          // Si usas fetch
+          window.fetch = new Proxy(window.fetch, {
+            apply: function(target, thisArg, argumentsList) {
+              const [resource, config] = argumentsList;
+              if (config && config.method && config.method !== 'GET') {
+                config.headers = config.headers || {};
+                config.headers['X-CSRFToken'] = getCookie('csrftoken'); // Obtener token actual
+              }
+              return target.apply(thisArg, argumentsList);
+            }
+          });
+
+          // Para jQuery (si se usa)
+          if (typeof $ !== 'undefined') {
+            $.ajaxSetup({
+              beforeSend: function(xhr, settings) {
+                if (!/^(GET|HEAD|OPTIONS|TRACE)$/i.test(settings.type) && !this.crossDomain) {
+                  xhr.setRequestHeader("X-CSRFToken", getCookie('csrftoken'));
+                }
+              }
+            });
+          }
+        }
+
+        // Verificar y actualizar tokens periódicamente
+        setInterval(updateCSRFTokens, 5000); // Cada 5 segundos
       });
     </script>
+    
+    <style>
+      /* Estilos mejorados para el menú desplegable */
+      .dropdown-menu {
+        animation: slideDown 0.3s ease-out;
+      }
+      
+      @keyframes slideDown {
+        from {
+          opacity: 0;
+          transform: translateY(-10px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+      
+      .dropdown-item {
+        transition: all 0.3s ease;
+        padding: 0.6rem 1rem;
+        margin: 0.2rem 0.5rem;
+      }
+      
+      .dropdown-item:hover {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white !important;
+        transform: translateX(5px);
+      }
+      
+      .dropdown-item i {
+        font-size: 1.1rem;
+        width: 24px;
+        text-align: center;
+      }
+      
+      .dropdown-header {
+        color: #667eea;
+        font-weight: 700;
+        font-size: 0.75rem;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        padding: 0.5rem 1rem;
+      }
+      
+      .badge {
+        animation: pulse 2s infinite;
+      }
+      
+      @keyframes pulse {
+        0%, 100% {
+          opacity: 1;
+        }
+        50% {
+          opacity: 0.7;
+        }
+      }
+    </style>
     
     {% block extra_js %}{% endblock %}
   </body>
  </html>
+

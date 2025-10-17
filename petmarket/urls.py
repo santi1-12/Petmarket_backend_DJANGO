@@ -16,19 +16,19 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
-from .views import index
+from .views import index, test_csrf_page
 from django.conf import settings
 from django.conf.urls.static import static
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', index, name='index'),
+    path('test-csrf/', test_csrf_page, name='test_csrf'),
     # Frontend product catalog
     path('productos/', include('productos.front_urls')),
     path('api/accounts/', include('accounts.urls')),
     path('api/productos/', include('productos.urls')),
     path('api/clientes/', include('clientes.urls')),
-    path('api/empleados/', include('empleados.urls')),
     path('api/pedidos/', include('pedidos.urls')),
     path('api/facturas/', include('facturas.urls')),
 ]
@@ -39,5 +39,6 @@ if settings.DEBUG:
 # Web account pages
 urlpatterns += [
     path('accounts/web/', include('accounts.front_urls')),
+    path('empleados/', include(('empleados.urls', 'empleados'), namespace='empleados_web')),
     path('carrito/', include('carrito.urls')),
 ]

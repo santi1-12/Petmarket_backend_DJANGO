@@ -9,6 +9,7 @@ from rest_framework.views import APIView
 from rest_framework_simplejwt.tokens import RefreshToken
 from .forms import CustomUserCreationForm, CustomAuthenticationForm
 from carrito.models import Cart, CartItem
+from django.http import HttpResponseForbidden
 
 
 # API views (existing JWT endpoints)
@@ -117,6 +118,11 @@ def login_page(request):
         user = authenticate(request, username=username, password=password)
         if user is not None:
             auth_login(request, user)
+            
+            # Forzar rotación del token CSRF
+            from django.middleware.csrf import rotate_token
+            rotate_token(request)
+            
             # Merge session cart into persistent cart for logged-in users
             session_cart = request.session.get('cart', {})
             if session_cart:
@@ -140,7 +146,27 @@ def login_page(request):
             
             from django.contrib import messages
             messages.success(request, f'¡Bienvenido de vuelta, {user.first_name or user.username}!')
-            return redirect('/')
+            
+            # Role-based redirection
+            try:
+                user_role = getattr(user, 'role', None)
+            except Exception:
+                user_role = None
+            
+            # Crear respuesta de redirección
+            if getattr(user, 'is_superuser', False) or user_role == 'admin':
+                response = redirect('/empleados/admin/')
+            elif user_role == 'empleado' or getattr(user, 'is_staff', False):
+                response = redirect('/empleados/panel/')
+            else:
+                response = redirect('/accounts/web/panel/')
+            
+            # Agregar header para evitar caché
+            response['Cache-Control'] = 'no-cache, no-store, must-revalidate'
+            response['Pragma'] = 'no-cache'
+            response['Expires'] = '0'
+            
+            return response
         else:
             from django.contrib import messages
             messages.error(request, 'Usuario o contraseña incorrectos. Intenta de nuevo.')
@@ -164,3 +190,21 @@ def logout_page(request):
 @login_required
 def profile_page(request):
     return render(request, 'accounts/profile.html', {'user': request.user})
+
+
+# Simple dashboards
+@login_required
+def user_dashboard(request):
+    # Only non-staff, non-superuser general users
+    if request.user.is_staff or request.user.is_superuser:
+        return HttpResponseForbidden("No autorizado")
+    return render(request, 'accounts/dashboard_user.html')
+
+
+@login_required
+def empleado_dashboard(request):
+    # Only staff or role empleado
+    role = getattr(request.user, 'role', None)
+    if not (request.user.is_staff or role == 'empleado'):
+        return HttpResponseForbidden("No autorizado")
+    return render(request, 'empleados/dashboard.html')

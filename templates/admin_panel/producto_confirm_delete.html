@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+
+{% block title %}Eliminar Producto - Admin{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2>Eliminar Producto</h2>
+    
+    <div class="alert alert-warning">
+        <p>¿Está seguro que desea eliminar el producto <strong>{{ producto.nombre }}</strong>?</p>
+        <p>Esta acción no se puede deshacer.</p>
+    </div>
+
+    <form method="post">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-danger">Sí, Eliminar</button>
+        <a href="{% url 'admin_productos_list' %}" class="btn btn-secondary">Cancelar</a>
+    </form>
+</div>
+{% endblock %}

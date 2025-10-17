@@ -1,7 +1,37 @@
 from django.shortcuts import render, redirect, get_object_or_404
+from django.contrib.auth.decorators import login_required
 from productos.models import Producto
 from .models import Cart, CartItem
-from django.contrib.auth.decorators import login_required
+from pedidos.models import Pedido, PedidoItem, Notificacion
+from django.contrib.auth import get_user_model
+
+@login_required
+def finalizar_compra(request):
+    cart = Cart.objects.filter(user=request.user).first()
+    if not cart or not cart.carrito_items.exists():
+        return redirect('/carrito/')
+
+    # Crear pedido
+    pedido = Pedido.objects.create(user=request.user)
+    for item in cart.carrito_items.select_related('producto').all():
+        PedidoItem.objects.create(pedido=pedido, producto=item.producto, cantidad=item.quantity)
+    pedido.save()
+
+    # Limpiar carrito
+    cart.carrito_items.all().delete()
+
+    # Notificar admin y empleados
+    User = get_user_model()
+    admins = User.objects.filter(is_superuser=True)
+    empleados = User.objects.filter(role='empleado')
+    mensaje = f"Nuevo pedido de {request.user.username} (ID pedido: {pedido.id})"
+    for admin in admins:
+        Notificacion.objects.create(user=admin, mensaje=mensaje)
+    for emp in empleados:
+        Notificacion.objects.create(user=emp, mensaje=mensaje)
+
+
+    return render(request, 'carrito/compra_exitosa.html', {'pedido': pedido})
 
 
 def add_to_cart(request, pk):

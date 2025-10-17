@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+
+{% block title %}{% if categoria %}Editar{% else %}Agregar{% endif %} Categoría - Admin{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2>{% if categoria %}Editar{% else %}Agregar{% endif %} Categoría</h2>
+    
+    <form method="post">
+        {% csrf_token %}
+        
+        <div class="mb-3">
+            <label for="nombre" class="form-label">Nombre</label>
+            <input type="text" name="nombre" id="nombre" class="form-control" value="{% if categoria %}{{ categoria.nombre }}{% endif %}" required>
+        </div>
+
+        <div class="mb-3">
+            <button type="submit" class="btn btn-primary">Guardar</button>
+            <a href="{% url 'admin_categorias_list' %}" class="btn btn-secondary">Cancelar</a>
+        </div>
+    </form>
+</div>
+{% endblock %}

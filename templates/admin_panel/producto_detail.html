@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+
+{% block title %}Detalle de Producto - Admin{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2>Detalle de Producto</h2>
+    
+    <div class="card">
+        <div class="card-body">
+            {% if producto.image %}
+            <div class="text-center mb-3">
+                <img src="{{ producto.image.url }}" alt="{{ producto.nombre }}" style="max-width: 300px;">
+            </div>
+            {% endif %}
+            
+            <table class="table">
+                <tr>
+                    <th>ID:</th>
+                    <td>{{ producto.id }}</td>
+                </tr>
+                <tr>
+                    <th>Nombre:</th>
+                    <td>{{ producto.nombre }}</td>
+                </tr>
+                <tr>
+                    <th>Descripción:</th>
+                    <td>{{ producto.descripcion }}</td>
+                </tr>
+                <tr>
+                    <th>Categoría:</th>
+                    <td>{{ producto.categoria.nombre|default:"Sin categoría" }}</td>
+                </tr>
+                <tr>
+                    <th>Precio:</th>
+                    <td>${{ producto.precio }}</td>
+                </tr>
+                <tr>
+                    <th>Stock:</th>
+                    <td>{{ producto.stock }}</td>
+                </tr>
+            </table>
+
+            <div class="mt-3">
+                <a href="{% url 'admin_producto_edit' producto.id %}" class="btn btn-warning">Editar</a>
+                <a href="{% url 'admin_producto_delete' producto.id %}" class="btn btn-danger">Eliminar</a>
+                <a href="{% url 'admin_productos_list' %}" class="btn btn-secondary">Volver al Listado</a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

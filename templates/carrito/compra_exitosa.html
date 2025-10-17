@@ -1,0 +1,10 @@
+{% extends 'base.html' %}
+{% block title %}Compra exitosa{% endblock %}
+{% block content %}
+<div class="alert alert-success mt-4">
+  <h4>¡Compra realizada con éxito!</h4>
+  <p>Tu pedido ha sido registrado. Pronto será gestionado por nuestro equipo.</p>
+  <p><strong>ID de pedido:</strong> {{ pedido.id }}</p>
+  <a href="/productos/" class="btn btn-primary mt-2">Seguir comprando</a>
+</div>
+{% endblock %}

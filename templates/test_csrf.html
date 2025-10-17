@@ -1,0 +1,80 @@
+{% extends "base.html" %}
+
+{% block title %}Test CSRF{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <h2>Test de Token CSRF</h2>
+    
+    <div class="card mt-4">
+        <div class="card-body">
+            <h5>Estado del Token CSRF</h5>
+            <div id="csrf-status"></div>
+            
+            <script>
+                function getCookie(name) {
+                    let cookieValue = null;
+                    if (document.cookie && document.cookie !== '') {
+                        const cookies = document.cookie.split(';');
+                        for (let i = 0; i < cookies.length; i++) {
+                            const cookie = cookies[i].trim();
+                            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                                break;
+                            }
+                        }
+                    }
+                    return cookieValue;
+                }
+
+                const token = getCookie('csrftoken');
+                const statusDiv = document.getElementById('csrf-status');
+                
+                if (token) {
+                    statusDiv.innerHTML = `
+                        <div class="alert alert-success">
+                            <strong>✓ Token CSRF detectado:</strong><br>
+                            <code style="word-break: break-all;">${token}</code>
+                        </div>
+                    `;
+                } else {
+                    statusDiv.innerHTML = `
+                        <div class="alert alert-danger">
+                            <strong>✗ No se detectó token CSRF</strong>
+                        </div>
+                    `;
+                }
+
+                // Verificar token en formulario
+                const formToken = document.querySelector('input[name="csrfmiddlewaretoken"]');
+                if (formToken) {
+                    statusDiv.innerHTML += `
+                        <div class="alert alert-info mt-2">
+                            <strong>Token en formulario:</strong><br>
+                            <code style="word-break: break-all;">${formToken.value}</code>
+                        </div>
+                    `;
+                }
+            </script>
+        </div>
+    </div>
+
+    <div class="card mt-4">
+        <div class="card-body">
+            <h5>Formulario de Prueba</h5>
+            <form method="post" action="/test-csrf/">
+                {% csrf_token %}
+                <div class="mb-3">
+                    <label class="form-label">Campo de prueba</label>
+                    <input type="text" name="test_field" class="form-control" placeholder="Escribe algo...">
+                </div>
+                <button type="submit" class="btn btn-primary">Enviar Prueba</button>
+            </form>
+        </div>
+    </div>
+
+    <div class="mt-4">
+        <a href="/empleados/admin/" class="btn btn-secondary">Volver al Admin Dashboard</a>
+    </div>
+</div>
+{% endblock %}
