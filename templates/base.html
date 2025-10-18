@@ -77,6 +77,8 @@
                     <li><a class="dropdown-item" href="{% url 'empleados:empleados_list' %}" style="border-radius: 10px;"><i class="bi bi-person-badge me-2 text-success"></i>Gestión de Empleados</a></li>
                     <li><a class="dropdown-item" href="{% url 'admin_productos_list' %}" style="border-radius: 10px;"><i class="bi bi-box-seam me-2 text-info"></i>Gestión de Productos</a></li>
                     <li><a class="dropdown-item" href="{% url 'admin_categorias_list' %}" style="border-radius: 10px;"><i class="bi bi-tags me-2 text-warning"></i>Gestión de Categorías</a></li>
+                    <li><a class="dropdown-item" href="{% url 'empleados:admin_facturas_list' %}" style="border-radius: 10px;"><i class="bi bi-receipt me-2 text-primary"></i>Gestión de Facturas</a></li>
+                    <li><a class="dropdown-item" href="{% url 'empleados:factura_manual_create' %}" style="border-radius: 10px;"><i class="bi bi-file-earmark-plus me-2 text-success"></i>Factura Manual</a></li>
                     <li><hr class="dropdown-divider"></li>
                     {% elif request.user.role == 'empleado' %}
                     <li><h6 class="dropdown-header"><i class="bi bi-briefcase me-2"></i>Panel de Empleado</h6></li>

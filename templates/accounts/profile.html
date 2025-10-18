@@ -169,6 +169,38 @@
       </div>
       {% endif %}
 
+      <!-- Formulario de edición de perfil -->
+      <div class="card border-0 shadow-sm mb-4" style="border-radius: 15px;">
+        <div class="card-header bg-transparent border-0 pt-4">
+          <h5 class="mb-0"><i class="bi bi-person-gear me-2"></i>Editar Perfil</h5>
+        </div>
+        <div class="card-body">
+          <form method="post">
+            {% csrf_token %}
+            <div class="mb-3">
+              <label for="first_name" class="form-label">Nombre</label>
+              <input type="text" class="form-control" id="first_name" name="first_name" value="{{ user.first_name }}" placeholder="Tu nombre">
+            </div>
+            <div class="mb-3">
+              <label for="last_name" class="form-label">Apellido</label>
+              <input type="text" class="form-control" id="last_name" name="last_name" value="{{ user.last_name }}" placeholder="Tu apellido">
+            </div>
+            <div class="mb-3">
+              <label for="email" class="form-label">Email</label>
+              <input type="email" class="form-control" id="email" name="email" value="{{ user.email }}" required>
+            </div>
+            <div class="mb-3">
+              <label class="form-label">Nombre de usuario</label>
+              <input type="text" class="form-control" value="{{ user.username }}" disabled>
+              <small class="text-muted">El nombre de usuario no se puede cambiar</small>
+            </div>
+            <button type="submit" class="btn btn-primary w-100">
+              <i class="bi bi-check-circle me-2"></i>Guardar Cambios
+            </button>
+          </form>
+        </div>
+      </div>
+
       <div class="card border-0 shadow-sm" style="border-radius: 15px;">
         <div class="card-header bg-transparent border-0 pt-4">
           <h5 class="mb-0"><i class="bi bi-gear me-2"></i>Opciones de Cuenta</h5>
@@ -187,6 +219,22 @@
   .hover-card:hover {
     transform: translateY(-5px);
     box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15) !important;
+  }
+  
+  .form-control:focus {
+    border-color: #667eea;
+    box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.15);
+  }
+  
+  .btn-primary {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border: none;
+  }
+  
+  .btn-primary:hover {
+    background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
   }
 </style>
 {% endblock %}

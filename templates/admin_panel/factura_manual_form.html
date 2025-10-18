@@ -1,0 +1,307 @@
+{% extends 'base.html' %}
+{% block title %}Crear Factura Manual{% endblock %}
+{% block content %}
+<div class="container-fluid py-4">
+  <!-- Header Card -->
+  <div class="row mb-4">
+    <div class="col-12">
+      <div class="card border-0 shadow-sm" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 15px;">
+        <div class="card-body py-3">
+          <div class="d-flex justify-content-between align-items-center">
+            <div class="d-flex align-items-center">
+              <div class="rounded-circle bg-white d-flex align-items-center justify-content-center" style="width: 60px; height: 60px;">
+                <i class="bi bi-receipt" style="font-size: 2rem; color: #667eea;"></i>
+              </div>
+              <div class="ms-3 text-white">
+                <h2 class="mb-0 fw-bold">Crear Factura Manual</h2>
+                <p class="mb-0 opacity-75"><i class="bi bi-plus-circle me-2"></i>Nueva factura o cotización</p>
+              </div>
+            </div>
+            <a href="{% url 'empleados:admin_facturas_list' %}" class="btn btn-light shadow-sm" style="border-radius: 10px; font-weight: 600;">
+              <i class="bi bi-arrow-left me-2"></i>Volver a Facturas
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="row justify-content-center">
+    <div class="col-lg-10">
+      <div class="card border-0 shadow-sm" style="border-radius: 18px;">
+        <div class="card-body p-4">
+          <form method="post">
+            {% csrf_token %}
+            
+              <!-- Mensaje Informativo sobre Número Automático -->
+              <div class="alert alert-info d-flex align-items-center mb-4" role="alert" style="border-radius: 12px; border-left: 4px solid #667eea; background: linear-gradient(90deg, rgba(102,126,234,0.1) 0%, rgba(118,75,162,0.05) 100%);">
+                <i class="bi bi-info-circle-fill me-3" style="font-size: 1.5rem; color: #667eea;"></i>
+                <div>
+                  <h6 class="alert-heading mb-1 fw-bold" style="color: #667eea;">Número de Documento Automático</h6>
+                  <p class="mb-0">El número se generará automáticamente con el formato <strong>F-AAAAMMDD-XXX</strong> para facturas o <strong>COT-AAAAMMDD-XXX</strong> para cotizaciones.</p>
+                </div>
+              </div>
+            
+            <!-- Datos del Cliente -->
+            <div class="mb-4">
+              <div class="d-flex align-items-center mb-3">
+                <div class="rounded-circle d-flex align-items-center justify-content-center me-3" style="width: 40px; height: 40px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+                  <i class="bi bi-person-circle text-white"></i>
+                </div>
+                <h5 class="mb-0 fw-bold" style="color: #667eea;">Datos del Cliente</h5>
+              </div>
+              <div class="row g-3">
+                <div class="col-md-3">
+                  <label for="{{ factura_form.cliente.id_for_label }}" class="form-label fw-semibold">{{ factura_form.cliente.label }}</label>
+                  <select name="{{ factura_form.cliente.html_name }}" id="{{ factura_form.cliente.id_for_label }}" class="form-select">
+                    <option value="">-- Seleccionar --</option>
+                    {% for value, label in factura_form.cliente.field.choices %}
+                      {% if value %}
+                      <option value="{{ value }}">{{ label }}</option>
+                      {% endif %}
+                    {% endfor %}
+                  </select>
+                </div>
+                <div class="col-md-3">
+                  <label for="{{ factura_form.nombre_cliente.id_for_label }}" class="form-label fw-semibold">{{ factura_form.nombre_cliente.label }}</label>
+                  {{ factura_form.nombre_cliente }}
+                </div>
+                <div class="col-md-3">
+                  <label for="{{ factura_form.email_cliente.id_for_label }}" class="form-label fw-semibold">{{ factura_form.email_cliente.label }}</label>
+                  {{ factura_form.email_cliente }}
+                </div>
+                <div class="col-md-3">
+                  <label for="{{ factura_form.tipo.id_for_label }}" class="form-label fw-semibold">{{ factura_form.tipo.label }}</label>
+                  {{ factura_form.tipo }}
+                </div>
+              </div>
+              <div class="row g-3 mt-2">
+                <div class="col-md-3">
+                  <div class="form-check form-switch">
+                    {{ factura_form.aplica_iva }}
+                    <label class="form-check-label fw-semibold" for="{{ factura_form.aplica_iva.id_for_label }}">
+                      {{ factura_form.aplica_iva.label }}
+                    </label>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <!-- Productos -->
+            <div class="mb-4">
+              <div class="d-flex align-items-center mb-3">
+                <div class="rounded-circle d-flex align-items-center justify-content-center me-3" style="width: 40px; height: 40px; background: linear-gradient(135deg, #43e97b 0%, #3dd771 100%);">
+                  <i class="bi bi-box-seam text-white"></i>
+                </div>
+                <h5 class="mb-0 fw-bold" style="color: #43e97b;">Productos</h5>
+              </div>
+              <div class="table-responsive">
+                {{ formset.management_form }}
+                <table class="table table-hover align-middle" style="border-radius: 12px; overflow: hidden;">
+                  <thead style="background: linear-gradient(90deg, #f8f9fa 0%, #e9ecef 100%);">
+                    <tr>
+                      <th class="py-3">Producto</th>
+                      <th class="py-3" style="width: 150px;">Cantidad</th>
+                      <th class="py-3 text-center" style="width: 80px;">Acción</th>
+                    </tr>
+                  </thead>
+                  <tbody id="formset-body">
+                    {% for form in formset %}
+                    <tr class="formset-row">
+                      <td>{{ form.producto }}</td>
+                      <td>{{ form.cantidad }}</td>
+                      <td class="text-center">
+                        {% if forloop.first %}
+                        <button type="button" class="btn btn-sm shadow-sm" onclick="addFormRow()" style="background: linear-gradient(90deg, #43e97b 0%, #3dd771 100%); color: white; border: none; border-radius: 8px;">
+                          <i class="bi bi-plus-circle"></i>
+                        </button>
+                        {% else %}
+                        <button type="button" class="btn btn-sm shadow-sm" onclick="removeFormRow(this)" style="background: linear-gradient(90deg, #ff6b6b 0%, #ee5a52 100%); color: white; border: none; border-radius: 8px;">
+                          <i class="bi bi-trash"></i>
+                        </button>
+                        {% endif %}
+                      </td>
+                    </tr>
+                    {% endfor %}
+                  </tbody>
+                </table>
+                <small class="text-muted"><i class="bi bi-info-circle me-1"></i>Puedes agregar más productos con el botón <i class="bi bi-plus-circle"></i></small>
+              </div>
+            </div>
+            
+            <!-- Botones de Acción -->
+            <div class="d-flex justify-content-end gap-2 mt-4 pt-3" style="border-top: 2px solid #e9ecef;">
+              <a href="{% url 'empleados:admin_facturas_list' %}" class="btn btn-outline-secondary px-4 py-2 shadow-sm" style="border-radius: 10px; font-weight: 600; border-width: 2px;">
+                <i class="bi bi-x-circle me-2"></i>Cancelar
+              </a>
+              <button type="submit" class="btn px-4 py-2 shadow-sm" style="background: linear-gradient(90deg, #667eea 0%, #764ba2 100%); color: white; border: none; border-radius: 10px; font-weight: 600;">
+                <i class="bi bi-save me-2"></i>Guardar Factura
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+.form-control, .form-select {
+  border-radius: 10px;
+  border: 2px solid #e0e7ff;
+  transition: all 0.3s ease;
+}
+.form-control:focus, .form-select:focus {
+  border-color: #667eea;
+  box-shadow: 0 0 0 0.2rem rgba(102,126,234,0.15);
+  transform: scale(1.02);
+}
+.table-hover tbody tr:hover {
+  background: rgba(102,126,234,0.05);
+  transform: translateX(3px);
+  transition: all 0.3s ease;
+}
+.btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15) !important;
+}
+</style>
+
+<script>
+// Datos de productos con precios (se carga del backend)
+const productoPrices = {
+  {% for producto in productos %}
+    {{ producto.id }}: {
+      nombre: "{{ producto.nombre|escapejs }}",
+      precio: {{ producto.precio|default:"0" }}
+    },
+  {% endfor %}
+};
+
+function addFormRow() {
+  const tbody = document.getElementById('formset-body');
+  const totalForms = document.getElementById('id_form-TOTAL_FORMS');
+  const currentFormCount = parseInt(totalForms.value);
+  
+  // Clonar la última fila
+  const lastRow = tbody.querySelector('.formset-row:last-child');
+  const newRow = lastRow.cloneNode(true);
+  
+  // Actualizar los nombres e IDs de los campos
+  newRow.querySelectorAll('select, input').forEach(field => {
+    const name = field.getAttribute('name');
+    const id = field.getAttribute('id');
+    if (name) {
+      field.setAttribute('name', name.replace(/form-\d+-/, `form-${currentFormCount}-`));
+    }
+    if (id) {
+      field.setAttribute('id', id.replace(/id_form-\d+-/, `id_form-${currentFormCount}-`));
+    }
+    field.value = '';
+  });
+  
+  // Cambiar el botón
+  const btnCell = newRow.querySelector('td:last-child');
+  btnCell.innerHTML = `<button type="button" class="btn btn-sm shadow-sm" onclick="removeFormRow(this)" style="background: linear-gradient(90deg, #ff6b6b 0%, #ee5a52 100%); color: white; border: none; border-radius: 8px;"><i class="bi bi-trash"></i></button>`;
+  
+  // Agregar validación al nuevo select
+  const productoSelect = newRow.querySelector('select[name*="producto"]');
+  if (productoSelect) {
+    productoSelect.addEventListener('change', validateProductPrice);
+  }
+  
+  tbody.appendChild(newRow);
+  totalForms.value = currentFormCount + 1;
+}
+
+function removeFormRow(btn) {
+  const tbody = document.getElementById('formset-body');
+  const rows = tbody.querySelectorAll('.formset-row');
+  if (rows.length > 1) {
+    btn.closest('tr').remove();
+    const totalForms = document.getElementById('id_form-TOTAL_FORMS');
+    totalForms.value = parseInt(totalForms.value) - 1;
+  }
+}
+
+function validateProductPrice(event) {
+  const select = event.target;
+  const productoId = parseInt(select.value);
+  
+  if (!productoId || !productoPrices[productoId]) {
+    return;
+  }
+  
+  const producto = productoPrices[productoId];
+  const precio = parseFloat(producto.precio);
+  
+  // Verificar si el precio es inválido
+  if (isNaN(precio) || precio <= 0 || !isFinite(precio)) {
+    const row = select.closest('tr');
+    
+    // Crear alerta si no existe
+    let alertDiv = row.querySelector('.price-warning');
+    if (!alertDiv) {
+      alertDiv = document.createElement('div');
+      alertDiv.className = 'price-warning alert alert-warning alert-dismissible fade show mt-2 mb-0';
+      alertDiv.style.cssText = 'border-radius: 10px; border-left: 4px solid #ffc107; font-size: 0.9rem;';
+      alertDiv.innerHTML = `
+        <i class="bi bi-exclamation-triangle-fill me-2"></i>
+        <strong>⚠️ Precio Inválido:</strong> El producto "<strong>${producto.nombre}</strong>" tiene un precio inválido (<strong>$${precio}</strong>). 
+        No podrás guardar esta factura hasta que corrijas el precio del producto en el catálogo.
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+      `;
+      
+      const td = select.closest('td');
+      td.appendChild(alertDiv);
+    }
+    
+    // Resaltar el select en rojo
+    select.style.borderColor = '#dc3545';
+    select.style.boxShadow = '0 0 0 0.2rem rgba(220, 53, 69, 0.25)';
+  } else {
+    // Limpiar alertas y estilos
+    const row = select.closest('tr');
+    const alertDiv = row.querySelector('.price-warning');
+    if (alertDiv) {
+      alertDiv.remove();
+    }
+    select.style.borderColor = '';
+    select.style.boxShadow = '';
+  }
+}
+
+// Agregar validación a todos los selects de producto al cargar
+document.addEventListener('DOMContentLoaded', function() {
+  const productoSelects = document.querySelectorAll('select[name*="producto"]');
+  productoSelects.forEach(select => {
+    select.addEventListener('change', validateProductPrice);
+  });
+  
+  // Validar al enviar el formulario
+  const form = document.querySelector('form');
+  if (form) {
+    form.addEventListener('submit', function(event) {
+      const productoSelects = document.querySelectorAll('select[name*="producto"]');
+      let hasInvalidPrice = false;
+      
+      productoSelects.forEach(select => {
+        const productoId = parseInt(select.value);
+        if (productoId && productoPrices[productoId]) {
+          const precio = parseFloat(productoPrices[productoId].precio);
+          if (isNaN(precio) || precio <= 0 || !isFinite(precio)) {
+            hasInvalidPrice = true;
+          }
+        }
+      });
+      
+      if (hasInvalidPrice) {
+        event.preventDefault();
+        alert('⚠️ No se puede guardar la factura porque uno o más productos tienen precios inválidos. Por favor, corrija los precios en el catálogo de productos antes de continuar.');
+        return false;
+      }
+    });
+  }
+});
+</script>
+{% endblock %}

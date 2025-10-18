@@ -1,41 +1,131 @@
-{% extends 'base.html' %}
-{% block title %}Carrito{% endblock %}
+﻿{% extends 'base.html' %}
+
+{% block title %}Carrito de Compras{% endblock %}
+
 {% block content %}
-<h1>Tu carrito</h1>
-{% if items %}
-  <table class="table">
-    <thead><tr><th>Producto</th><th>Cantidad</th><th>Subtotal</th><th></th></tr></thead>
-    <tbody>
-    {% for it in items %}
-      <tr>
-        <td>{{ it.producto.nombre }}</td>
-        <td>
-          {% if request.user.is_authenticated %}
-            <form method="post" action="/carrito/update/" class="d-flex gap-2">
-              {% csrf_token %}
-              <input type="hidden" name="item_id" value="{{ it.id }}">
-              <input type="number" name="qty" min="0" value="{{ it.qty }}" class="form-control" style="width:80px">
-              <button class="btn btn-sm btn-primary">Actualizar</button>
-            </form>
-          {% else %}
-            {{ it.qty }}
-          {% endif %}
-        </td>
-        <td>${{ it.subtotal }}</td>
-        <td>
-          <a class="btn btn-sm btn-danger" href="/carrito/remove/{{ it.producto.pk }}/">Eliminar</a>
-        </td>
-      </tr>
-    {% endfor %}
-    </tbody>
-  </table>
-  <div class="text-end"><strong>Total: ${{ total }}</strong></div>
-  <div class="text-end mt-3">
-    {% if request.user.is_authenticated and items %}
-      <a href="/carrito/finalizar/" class="btn btn-success">Finalizar compra</a>
+<div class="container mt-4 mb-5">
+    <h2><i class="bi bi-cart3 me-2"></i>Tu Carrito</h2>
+    
+    {% if items %}
+    <div class="row">
+        <div class="col-lg-8">
+            {% for it in items %}
+            <div class="card mb-3">
+                <div class="card-body">
+                    <div class="row align-items-center">
+                        <div class="col-md-2">
+                            {% if it.producto.image %}
+                            <img src="{{ it.producto.image.url }}" alt="{{ it.producto.nombre }}" class="img-fluid rounded">
+                            {% else %}
+                            <div class="bg-light p-3 text-center">Sin imagen</div>
+                            {% endif %}
+                        </div>
+                        <div class="col-md-4">
+                            <h5>{{ it.producto.nombre }}</h5>
+                            <p class="text-muted">${{ it.producto.precio }} c/u</p>
+                        </div>
+                        <div class="col-md-3">
+                            {% if request.user.is_authenticated %}
+                            <div class="input-group">
+                                <button type="button" class="btn btn-outline-secondary btn-sm qty-btn btn-decrease" data-item-id="{{ it.id }}">-</button>
+                                <span class="form-control text-center qty-display" data-item-id="{{ it.id }}">{{ it.qty }}</span>
+                                <button type="button" class="btn btn-outline-secondary btn-sm qty-btn btn-increase" data-item-id="{{ it.id }}">+</button>
+                            </div>
+                            {% else %}
+                            <p>Cantidad: {{ it.qty }}</p>
+                            {% endif %}
+                        </div>
+                        <div class="col-md-3 text-end">
+                            <h5 class="subtotal-display" data-item-id="{{ it.id }}">${{ it.subtotal|floatformat:2 }}</h5>
+                            <a href="{% url 'remove_from_cart' it.producto.pk %}" class="btn btn-sm btn-danger">Eliminar</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        
+        <div class="col-lg-4">
+            <div class="card">
+                <div class="card-body">
+                    <h4>Resumen</h4>
+                    <hr>
+                    <p>Subtotal: <span id="summary-subtotal">${{ total|floatformat:2 }}</span></p>
+                    <p>Envío: <strong class="text-success">GRATIS</strong></p>
+                    <hr>
+                    <h4>Total: <span id="summary-total">${{ total|floatformat:2 }}</span></h4>
+                    
+                    {% if request.user.is_authenticated %}
+                    <a href="{% url 'finalizar_compra' %}" class="btn btn-primary w-100">Finalizar Compra</a>
+                    {% else %}
+                    <p class="text-muted">Inicia sesión para finalizar</p>
+                    <a href="{% url 'web_login' %}" class="btn btn-primary w-100">Ir a Iniciar Sesión</a>
+                    {% endif %}
+                    
+                    <a href="{% url 'catalogo' %}" class="btn btn-outline-secondary w-100 mt-2">Seguir Comprando</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% else %}
+    <div class="alert alert-info">Tu carrito está vacío. <a href="{% url 'catalogo' %}">Ir al catálogo</a></div>
     {% endif %}
-  </div>
-{% else %}
-  <p>Tu carrito está vacío.</p>
+</div>
+
+{% if request.user.is_authenticated %}
+<script>
+function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+
+const csrftoken = getCookie('csrftoken');
+
+document.querySelectorAll('.btn-increase, .btn-decrease').forEach(btn => {
+    btn.addEventListener('click', async function() {
+        const itemId = this.dataset.itemId;
+        const action = this.classList.contains('btn-increase') ? 'increase' : 'decrease';
+        const qtyDisplay = document.querySelector(`.qty-display[data-item-id="${itemId}"]`);
+        const subtotalDisplay = document.querySelector(`.subtotal-display[data-item-id="${itemId}"]`);
+        
+        try {
+            const response = await fetch('{% url "update_quantity" %}', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'X-CSRFToken': csrftoken
+                },
+                body: `item_id=${itemId}&action=${action}`
+            });
+            
+            const data = await response.json();
+            
+            if (data.success) {
+                if (data.deleted) {
+                    location.reload();
+                } else {
+                    qtyDisplay.textContent = data.quantity;
+                    subtotalDisplay.textContent = `$${data.subtotal.toFixed(2)}`;
+                    document.getElementById('summary-subtotal').textContent = `$${data.total.toFixed(2)}`;
+                    document.getElementById('summary-total').textContent = `$${data.total.toFixed(2)}`;
+                }
+            }
+        } catch (error) {
+            console.error('Error:', error);
+        }
+    });
+});
+</script>
 {% endif %}
 {% endblock %}

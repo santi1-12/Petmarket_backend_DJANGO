@@ -1,26 +1,210 @@
 {% extends 'base.html' %}
 {% block title %}{{ action }}{% endblock %}
+
 {% block content %}
-<div class="row justify-content-center">
-  <div class="col-md-8">
-    <div class="card">
-      <div class="card-body">
-        <h3>{{ action }}</h3>
-        <form method="post" enctype="multipart/form-data">
-          {% csrf_token %}
-          {{ form.non_field_errors }}
-          {% for field in form %}
-            <div class="mb-3">
-              {{ field.label_tag }}
-              {{ field }}
-              {% if field.help_text %}<div class="form-text">{{ field.help_text }}</div>{% endif %}
-              {{ field.errors }}
+<style>
+  .form-container {
+    padding: 2rem 0;
+  }
+  
+  .form-header {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 2rem;
+    border-radius: 15px 15px 0 0;
+    margin-bottom: 0;
+  }
+  
+  .form-card {
+    background: white;
+    border-radius: 15px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    border: 1px solid #e0e7ff;
+    overflow: hidden;
+  }
+  
+  .form-body {
+    padding: 2rem;
+  }
+  
+  .form-label {
+    color: #667eea;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+  }
+  
+  .form-control, .form-select {
+    border: 2px solid #e0e7ff;
+    border-radius: 10px;
+    padding: 0.75rem;
+    transition: all 0.3s ease;
+  }
+  
+  .form-control:focus, .form-select:focus {
+    border-color: #667eea;
+    box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.15);
+  }
+  
+  .btn-save {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border: none;
+    color: white;
+    padding: 0.75rem 2rem;
+    border-radius: 10px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+  }
+  
+  .btn-save:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 15px rgba(102, 126, 234, 0.4);
+    color: white;
+  }
+  
+  .btn-cancel {
+    border: 2px solid #667eea;
+    color: #667eea;
+    padding: 0.75rem 2rem;
+    border-radius: 10px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    background: white;
+  }
+  
+  .btn-cancel:hover {
+    background: #667eea;
+    color: white;
+  }
+  
+  .image-preview {
+    border: 2px dashed #e0e7ff;
+    border-radius: 10px;
+    padding: 1rem;
+    text-align: center;
+    background: #f8fafc;
+    margin-top: 0.5rem;
+  }
+  
+  .image-preview img {
+    max-width: 200px;
+    max-height: 200px;
+    border-radius: 8px;
+    margin-top: 1rem;
+  }
+  
+  .form-text {
+    color: #6b7280;
+    font-size: 0.875rem;
+    margin-top: 0.25rem;
+  }
+  
+  .alert-danger {
+    background: #fef2f2;
+    border: 2px solid #ef4444;
+    color: #991b1b;
+    border-radius: 10px;
+    padding: 1rem;
+    margin-bottom: 1rem;
+  }
+  
+  .field-error {
+    color: #ef4444;
+    font-size: 0.875rem;
+    margin-top: 0.25rem;
+  }
+</style>
+
+<div class="container form-container">
+  <div class="row justify-content-center">
+    <div class="col-lg-8">
+      <div class="form-card">
+        <div class="form-header">
+          <h2 class="mb-0">
+            <i class="bi bi-box-seam me-2"></i>{{ action }}
+          </h2>
+          <p class="mb-0 mt-2 opacity-90">Complete todos los campos del formulario</p>
+        </div>
+        
+        <div class="form-body">
+          {% if form.non_field_errors %}
+            <div class="alert alert-danger">
+              <i class="bi bi-exclamation-triangle-fill me-2"></i>
+              {{ form.non_field_errors }}
             </div>
-          {% endfor %}
-          <button class="btn btn-primary" type="submit">Guardar</button>
-        </form>
+          {% endif %}
+          
+          <form method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            
+            {% for field in form %}
+              <div class="mb-4">
+                <label class="form-label" for="{{ field.id_for_label }}">
+                  {% if field.field.required %}
+                    {{ field.label }} <span class="text-danger">*</span>
+                  {% else %}
+                    {{ field.label }}
+                  {% endif %}
+                </label>
+                
+                {{ field }}
+                
+                {% if field.name == 'image' %}
+                  <div class="image-preview" id="imagePreview">
+                    <i class="bi bi-image text-muted" style="font-size: 2rem;"></i>
+                    <p class="text-muted mb-0 mt-2">Vista previa de la imagen</p>
+                    <div id="previewContainer"></div>
+                  </div>
+                {% endif %}
+                
+                {% if field.help_text %}
+                  <div class="form-text">
+                    <i class="bi bi-info-circle me-1"></i>{{ field.help_text }}
+                  </div>
+                {% endif %}
+                
+                {% if field.errors %}
+                  <div class="field-error">
+                    <i class="bi bi-x-circle-fill me-1"></i>
+                    {{ field.errors }}
+                  </div>
+                {% endif %}
+              </div>
+            {% endfor %}
+            
+            <div class="d-flex gap-3 mt-4">
+              <button class="btn btn-save" type="submit">
+                <i class="bi bi-check-circle me-2"></i>Guardar Producto
+              </button>
+              <a href="{% url 'empleados_web:dashboard' %}" class="btn btn-cancel">
+                <i class="bi bi-x-circle me-2"></i>Cancelar
+              </a>
+            </div>
+          </form>
+        </div>
       </div>
     </div>
   </div>
 </div>
+
+<script>
+  // Preview de imagen
+  const imageInput = document.querySelector('input[type="file"]');
+  if (imageInput) {
+    imageInput.addEventListener('change', function(e) {
+      const file = e.target.files[0];
+      const previewContainer = document.getElementById('previewContainer');
+      
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+          previewContainer.innerHTML = `<img src="${e.target.result}" alt="Preview">`;
+        };
+        reader.readAsDataURL(file);
+      } else {
+        previewContainer.innerHTML = '';
+      }
+    });
+  }
+</script>
 {% endblock %}
+

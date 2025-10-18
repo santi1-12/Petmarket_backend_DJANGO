@@ -1,0 +1,151 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Notificaciones{% endblock %}
+
+{% block content %}
+<div class="container-fluid mt-4">
+    <div class="row">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2><i class="bi bi-bell me-2"></i>Notificaciones de Usuarios</h2>
+                <div>
+                    <form method="post" action="{% url 'empleados:notificacion_marcar_todas_leidas' %}" class="d-inline">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-success me-2" {% if stats.no_leidas == 0 %}disabled{% endif %}>
+                            <i class="bi bi-check-all me-2"></i>Marcar Todas como Leídas
+                        </button>
+                    </form>
+                    <a href="{% url 'empleados:dashboard' %}" class="btn btn-secondary">
+                        <i class="bi bi-arrow-left me-2"></i>Volver al Dashboard
+                    </a>
+                </div>
+            </div>
+
+            {% if messages %}
+            {% for message in messages %}
+            <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+            {% endfor %}
+            {% endif %}
+
+            <!-- Stats Cards -->
+            <div class="row mb-4">
+                <div class="col-md-4">
+                    <div class="card border-primary">
+                        <div class="card-body text-center">
+                            <i class="bi bi-inbox text-primary" style="font-size: 2rem;"></i>
+                            <h3 class="mt-2">{{ stats.total }}</h3>
+                            <p class="text-muted mb-0">Total Notificaciones</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card border-warning">
+                        <div class="card-body text-center">
+                            <i class="bi bi-exclamation-circle text-warning" style="font-size: 2rem;"></i>
+                            <h3 class="mt-2">{{ stats.no_leidas }}</h3>
+                            <p class="text-muted mb-0">No Leídas</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card border-success">
+                        <div class="card-body text-center">
+                            <i class="bi bi-check-circle text-success" style="font-size: 2rem;"></i>
+                            <h3 class="mt-2">{{ stats.leidas }}</h3>
+                            <p class="text-muted mb-0">Leídas</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Filters -->
+            <div class="card mb-4">
+                <div class="card-body">
+                    <div class="btn-group" role="group">
+                        <a href="{% url 'empleados:notificaciones_list' %}" 
+                           class="btn btn-outline-primary {% if filtro == 'todas' %}active{% endif %}">
+                            <i class="bi bi-inbox me-1"></i>Todas
+                        </a>
+                        <a href="{% url 'empleados:notificaciones_list' %}?filtro=no_leidas" 
+                           class="btn btn-outline-warning {% if filtro == 'no_leidas' %}active{% endif %}">
+                            <i class="bi bi-exclamation-circle me-1"></i>No Leídas
+                        </a>
+                        <a href="{% url 'empleados:notificaciones_list' %}?filtro=leidas" 
+                           class="btn btn-outline-success {% if filtro == 'leidas' %}active{% endif %}">
+                            <i class="bi bi-check-circle me-1"></i>Leídas
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Notificaciones List -->
+            <div class="card">
+                <div class="card-body">
+                    {% if notificaciones %}
+                    <div class="list-group">
+                        {% for notif in notificaciones %}
+                        <div class="list-group-item {% if not notif.leida %}list-group-item-warning{% endif %}">
+                            <div class="d-flex w-100 justify-content-between align-items-start">
+                                <div class="flex-grow-1">
+                                    <div class="d-flex align-items-center mb-2">
+                                        <i class="bi bi-person-circle me-2 text-primary" style="font-size: 1.5rem;"></i>
+                                        <h5 class="mb-0">{{ notif.user.username }}</h5>
+                                        {% if not notif.leida %}
+                                        <span class="badge bg-warning text-dark ms-2">Nueva</span>
+                                        {% endif %}
+                                    </div>
+                                    <p class="mb-2">{{ notif.mensaje }}</p>
+                                    <small class="text-muted">
+                                        <i class="bi bi-clock me-1"></i>{{ notif.creada_en|date:"d/m/Y H:i" }}
+                                    </small>
+                                </div>
+                                <div class="ms-3">
+                                    {% if not notif.leida %}
+                                    <form method="post" action="{% url 'empleados:notificacion_marcar_leida' notif.id %}" class="d-inline">
+                                        {% csrf_token %}
+                                        <button type="submit" class="btn btn-sm btn-success" title="Marcar como leída">
+                                            <i class="bi bi-check-circle"></i>
+                                        </button>
+                                    </form>
+                                    {% else %}
+                                    <span class="badge bg-success">
+                                        <i class="bi bi-check-circle me-1"></i>Leída
+                                    </span>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    {% else %}
+                    <div class="alert alert-info">
+                        <i class="bi bi-info-circle me-2"></i>
+                        No hay notificaciones {% if filtro != 'todas' %}{{ filtro }}{% endif %}.
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .card {
+        border-radius: 10px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    .list-group-item {
+        border-radius: 5px !important;
+        margin-bottom: 10px;
+        border: 1px solid #dee2e6;
+    }
+    .list-group-item-warning {
+        background-color: #fff3cd;
+        border-left: 4px solid #ffc107;
+    }
+</style>
+{% endblock %}

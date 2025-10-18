@@ -1,0 +1,187 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Pedido #{{ pedido.id }}{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2><i class="bi bi-receipt me-2"></i>Pedido #{{ pedido.id }}</h2>
+                <a href="{% url 'empleados:pedidos_list' %}" class="btn btn-secondary">
+                    <i class="bi bi-arrow-left me-2"></i>Volver a Pedidos
+                </a>
+            </div>
+
+            {% if messages %}
+            {% for message in messages %}
+            <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+            {% endfor %}
+            {% endif %}
+
+            <div class="row">
+                <!-- Info del Pedido -->
+                <div class="col-md-6 mb-4">
+                    <div class="card h-100">
+                        <div class="card-header bg-primary text-white">
+                            <h5 class="mb-0"><i class="bi bi-info-circle me-2"></i>Información del Pedido</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="row mb-3">
+                                <div class="col-sm-4"><strong>ID Pedido:</strong></div>
+                                <div class="col-sm-8">#{{ pedido.id }}</div>
+                            </div>
+                            <div class="row mb-3">
+                                <div class="col-sm-4"><strong>Fecha:</strong></div>
+                                <div class="col-sm-8">
+                                    <i class="bi bi-calendar me-1"></i>{{ pedido.creado_en|date:"d/m/Y H:i" }}
+                                </div>
+                            </div>
+                            <div class="row mb-3">
+                                <div class="col-sm-4"><strong>Actualizado:</strong></div>
+                                <div class="col-sm-8">
+                                    <i class="bi bi-clock me-1"></i>{{ pedido.actualizado_en|date:"d/m/Y H:i" }}
+                                </div>
+                            </div>
+                            <div class="row mb-3">
+                                <div class="col-sm-4"><strong>Estado Actual:</strong></div>
+                                <div class="col-sm-8">
+                                    {% if pedido.estado == 'sin_entregar' %}
+                                    <span class="badge bg-danger fs-6">
+                                        <i class="bi bi-exclamation-circle me-1"></i>Sin Entregar
+                                    </span>
+                                    {% elif pedido.estado == 'en_camino' %}
+                                    <span class="badge bg-warning text-dark fs-6">
+                                        <i class="bi bi-truck me-1"></i>En Camino
+                                    </span>
+                                    {% else %}
+                                    <span class="badge bg-success fs-6">
+                                        <i class="bi bi-check-circle me-1"></i>Entregado
+                                    </span>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Info del Cliente -->
+                <div class="col-md-6 mb-4">
+                    <div class="card h-100">
+                        <div class="card-header bg-info text-white">
+                            <h5 class="mb-0"><i class="bi bi-person-circle me-2"></i>Información del Cliente</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="row mb-3">
+                                <div class="col-sm-4"><strong>Nombre:</strong></div>
+                                <div class="col-sm-8">{{ pedido.user.get_full_name|default:pedido.user.username }}</div>
+                            </div>
+                            <div class="row mb-3">
+                                <div class="col-sm-4"><strong>Usuario:</strong></div>
+                                <div class="col-sm-8">{{ pedido.user.username }}</div>
+                            </div>
+                            <div class="row mb-3">
+                                <div class="col-sm-4"><strong>Email:</strong></div>
+                                <div class="col-sm-8">
+                                    <a href="mailto:{{ pedido.user.email }}">{{ pedido.user.email }}</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Productos del Pedido -->
+            <div class="card mb-4">
+                <div class="card-header bg-success text-white">
+                    <h5 class="mb-0"><i class="bi bi-box-seam me-2"></i>Productos del Pedido</h5>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Producto</th>
+                                    <th>Precio</th>
+                                    <th>Cantidad</th>
+                                    <th class="text-end">Subtotal</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for item in pedido.items.all %}
+                                <tr>
+                                    <td>
+                                        <strong>{{ item.producto.nombre }}</strong>
+                                        {% if item.producto.descripcion %}
+                                        <br><small class="text-muted">{{ item.producto.descripcion|truncatewords:10 }}</small>
+                                        {% endif %}
+                                    </td>
+                                    <td>${{ item.producto.precio }}</td>
+                                    <td>
+                                        <span class="badge bg-secondary">{{ item.cantidad }}</span>
+                                    </td>
+                                    <td class="text-end">
+                                        <strong>${{ item.producto.precio|floatformat:2 }}</strong>
+                                    </td>
+                                </tr>
+                                {% empty %}
+                                <tr>
+                                    <td colspan="4" class="text-center text-muted">No hay productos en este pedido</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Actualizar Estado -->
+            <div class="card">
+                <div class="card-header bg-warning">
+                    <h5 class="mb-0"><i class="bi bi-arrow-repeat me-2"></i>Actualizar Estado del Pedido</h5>
+                </div>
+                <div class="card-body">
+                    <form method="post" action="{% url 'empleados:pedido_update_status' pedido.id %}" class="row g-3 align-items-end">
+                        {% csrf_token %}
+                        <div class="col-md-8">
+                            <label class="form-label"><strong>Nuevo Estado:</strong></label>
+                            <select name="estado" class="form-select" required>
+                                <option value="">-- Seleccionar Estado --</option>
+                                <option value="sin_entregar" {% if pedido.estado == 'sin_entregar' %}selected{% endif %}>
+                                    Sin Entregar
+                                </option>
+                                <option value="en_camino" {% if pedido.estado == 'en_camino' %}selected{% endif %}>
+                                    En Camino
+                                </option>
+                                <option value="entregado" {% if pedido.estado == 'entregado' %}selected{% endif %}>
+                                    Entregado
+                                </option>
+                            </select>
+                        </div>
+                        <div class="col-md-4">
+                            <button type="submit" class="btn btn-primary w-100">
+                                <i class="bi bi-check-circle me-2"></i>Actualizar Estado
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .card {
+        border-radius: 10px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        margin-bottom: 1rem;
+    }
+    .card-header {
+        border-radius: 10px 10px 0 0 !important;
+    }
+</style>
+{% endblock %}

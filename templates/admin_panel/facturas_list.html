@@ -1,0 +1,115 @@
+{% extends 'base.html' %}
+{% block title %}Gestión de Facturas{% endblock %}
+{% block content %}
+<div class="container-fluid py-4">
+  <div class="row mb-4">
+    <div class="col-12">
+      <div class="card border-0 shadow-lg" style="border-radius: 18px; background: linear-gradient(135deg, #667eea 0%, #43e97b 100%);">
+        <div class="card-body py-4 px-4">
+          <div class="d-flex justify-content-between align-items-center">
+            <div>
+              <h2 class="mb-0 text-white"><i class="bi bi-receipt me-2"></i>Gestión de Facturas</h2>
+              <p class="text-white-50 mb-0 mt-1">Administra todas las facturas y cotizaciones del sistema</p>
+            </div>
+            <div class="d-flex gap-2">
+              <a href="{% url 'empleados:admin_dashboard' %}" class="btn btn-light shadow-sm" style="border-radius: 12px; font-weight: 600;">
+                <i class="bi bi-arrow-left me-2"></i>Volver
+              </a>
+              <a href="{% url 'empleados:factura_manual_create' %}" class="btn btn-warning btn-lg shadow-sm" style="border-radius: 12px; font-weight: 600; background: linear-gradient(90deg, #ffd93d 0%, #f7a800 100%); border: none; color: #000;">
+                <i class="bi bi-plus-circle me-2"></i>Nueva Factura
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <div class="row">
+    <div class="col-12">
+      <div class="card border-0 shadow-sm" style="border-radius: 15px;">
+        <div class="card-body p-0">
+          <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+              <thead style="background: linear-gradient(90deg, #f8f9fa 0%, #e9ecef 100%);">
+                <tr>
+                  <th class="px-4 py-3">Número</th>
+                  <th class="py-3">Tipo</th>
+                  <th class="py-3">Cliente</th>
+                  <th class="py-3">Fecha</th>
+                  <th class="py-3">Total</th>
+                  <th class="py-3">Estado</th>
+                  <th class="py-3 text-center">Acciones</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for factura in facturas %}
+                <tr style="border-left: 4px solid {% if factura.tipo == 'factura' %}#43e97b{% else %}#667eea{% endif %};">
+                  <td class="px-4 fw-bold">{{ factura.numero }}</td>
+                  <td>
+                    {% if factura.tipo == 'factura' %}
+                    <span class="badge" style="background: linear-gradient(90deg, #43e97b 0%, #3dd771 100%); border: none;">
+                      <i class="bi bi-receipt"></i> Factura
+                    </span>
+                    {% else %}
+                    <span class="badge" style="background: linear-gradient(90deg, #667eea 0%, #5568d3 100%); border: none;">
+                      <i class="bi bi-file-earmark-text"></i> Cotización
+                    </span>
+                    {% endif %}
+                  </td>
+                  <td>
+                    {% if factura.nombre_cliente %}
+                      {{ factura.nombre_cliente }}
+                    {% elif factura.user %}
+                      {{ factura.user.get_full_name|default:factura.user.username }}
+                    {% else %}
+                      Cliente sin registrar
+                    {% endif %}
+                  </td>
+                  <td>{{ factura.created_at|date:'d/m/Y H:i' }}</td>
+                  <td class="fw-bold text-success">${{ factura.total|floatformat:2 }} <small class="text-muted">COP</small></td>
+                  <td>
+                    {% if factura.status == 'paid' %}
+                      <span class="badge bg-success"><i class="bi bi-check-circle"></i> Pagada</span>
+                    {% elif factura.status == 'cancelled' %}
+                      <span class="badge bg-danger"><i class="bi bi-x-circle"></i> Anulada</span>
+                    {% else %}
+                      <span class="badge bg-warning text-dark"><i class="bi bi-clock"></i> Pendiente</span>
+                    {% endif %}
+                  </td>
+                  <td class="text-center">
+                    <a href="{% url 'empleados:admin_factura_detail' factura.id %}" class="btn btn-sm btn-outline-primary" style="border-radius: 8px;">
+                      <i class="bi bi-eye"></i> Ver
+                    </a>
+                  </td>
+                </tr>
+                {% empty %}
+                <tr>
+                  <td colspan="7" class="text-center py-5">
+                    <i class="bi bi-inbox" style="font-size: 3rem; color: #e9ecef;"></i>
+                    <p class="text-muted mt-3">No hay facturas registradas</p>
+                    <a href="{% url 'empleados:factura_manual_create' %}" class="btn btn-primary">
+                      <i class="bi bi-plus-circle me-2"></i>Crear primera factura
+                    </a>
+                  </td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+.table tbody tr {
+  transition: all 0.2s ease;
+}
+.table tbody tr:hover {
+  transform: translateX(5px);
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+}
+</style>
+{% endblock %}

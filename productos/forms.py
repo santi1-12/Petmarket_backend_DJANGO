@@ -10,19 +10,16 @@ CATEGORIAS = [
 ]
 
 class ProductoForm(forms.ModelForm):
-    categoria = forms.ChoiceField(choices=CATEGORIAS, required=False)
-    image = forms.ImageField(required=False)
+    categoria = forms.ChoiceField(choices=CATEGORIAS, required=False, widget=forms.Select(attrs={'class': 'form-select'}))
+    image = forms.ImageField(required=False, widget=forms.FileInput(attrs={'class': 'form-control'}))
 
-    class Meta:
-        model = Producto
-        fields = ['nombre', 'precio', 'stock', 'categoria', 'descripcion', 'image']
-from .models import Producto
-
-
-class ProductoForm(forms.ModelForm):
     class Meta:
         model = Producto
         fields = ['nombre', 'descripcion', 'precio', 'stock', 'categoria', 'image']
         widgets = {
-            'descripcion': forms.Textarea(attrs={'rows': 4}),
+            'nombre': forms.TextInput(attrs={'class': 'form-control'}),
+            'descripcion': forms.Textarea(attrs={'rows': 4, 'class': 'form-control'}),
+            'precio': forms.NumberInput(attrs={'class': 'form-control', 'step': '0.01'}),
+            'stock': forms.NumberInput(attrs={'class': 'form-control'}),
         }
+

@@ -189,6 +189,31 @@ def logout_page(request):
 
 @login_required
 def profile_page(request):
+    if request.method == 'POST':
+        # Get form data
+        first_name = request.POST.get('first_name', '')
+        last_name = request.POST.get('last_name', '')
+        email = request.POST.get('email', '')
+        
+        # Update user
+        user = request.user
+        user.first_name = first_name
+        user.last_name = last_name
+        
+        # Check if email is unique
+        if email != user.email:
+            if CustomUser.objects.filter(email=email).exclude(pk=user.pk).exists():
+                from django.contrib import messages
+                messages.error(request, 'Ese email ya está en uso por otro usuario.')
+                return redirect('web_profile')
+            user.email = email
+        
+        user.save()
+        
+        from django.contrib import messages
+        messages.success(request, '¡Perfil actualizado correctamente!')
+        return redirect('web_profile')
+    
     return render(request, 'accounts/profile.html', {'user': request.user})
 
 

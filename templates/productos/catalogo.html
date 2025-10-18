@@ -2,17 +2,250 @@
 {% block title %}Catálogo - PetMarket{% endblock %}
 
 {% block content %}
-  <div class="d-flex justify-content-between align-items-center mb-3">
-    <h1 class="mb-0">Catálogo</h1>
-    <a class="btn btn-outline-secondary d-lg-none" data-bs-toggle="collapse" href="#catalogFilters" role="button">Filtros</a>
+<style>
+  .catalog-header {
+    background: linear-gradient(135deg, #667eea 0%, #43e97b 100%);
+    color: white;
+    padding: 3.5rem 0;
+    margin: -1rem -1rem 2rem -1rem;
+    box-shadow: 0 8px 20px rgba(102,126,234,0.3);
+    position: relative;
+    overflow: hidden;
+  }
+  
+  .catalog-header::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.05'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+    opacity: 0.3;
+  }
+  
+  .filter-card {
+    background: white;
+    border-radius: 18px;
+    padding: 1.8rem;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    border: none;
+    transition: all 0.3s ease;
+  }
+  
+  .filter-card:hover {
+    box-shadow: 0 8px 20px rgba(102,126,234,0.15);
+    transform: translateY(-3px);
+  }
+  
+  .filter-card h6 {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    font-weight: 700;
+    font-size: 1.2rem;
+    border-bottom: 3px solid #667eea;
+    padding-bottom: 0.8rem;
+    margin-bottom: 1.2rem;
+  }
+  
+  .form-check-input:checked {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-color: #667eea;
+  }
+  
+  .form-check-label {
+    cursor: pointer;
+    transition: color 0.2s ease;
+  }
+  
+  .form-check-label:hover {
+    color: #667eea;
+  }
+  
+  .product-card {
+    background: white;
+    border-radius: 18px;
+    overflow: hidden;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    border: none;
+    height: 100%;
+  }
+  
+  .product-card:hover {
+    transform: translateY(-10px) scale(1.02);
+    box-shadow: 0 15px 35px rgba(102, 126, 234, 0.25);
+  }
+  
+  .thumb-wrapper {
+    position: relative;
+    height: 240px;
+    overflow: hidden;
+    background: linear-gradient(135deg, #f5f7ff 0%, #e0e7ff 100%);
+  }
+  
+  .product-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.5s ease;
+  }
+  
+  .product-card:hover .product-image {
+    transform: scale(1.15) rotate(2deg);
+  }
+  
+  .categoria-badge {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+    padding: 0.5rem 1rem;
+    border-radius: 25px;
+    font-weight: 600;
+    font-size: 0.85rem;
+    letter-spacing: 0.5px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+    animation: bounceIn 0.6s ease;
+  }
+  
+  @keyframes bounceIn {
+    0% { transform: scale(0); opacity: 0; }
+    50% { transform: scale(1.1); }
+    100% { transform: scale(1); opacity: 1; }
+  }
+  
+  .card-title a {
+    color: #2d3748 !important;
+    font-weight: 700;
+    transition: all 0.3s ease;
+    font-size: 1.1rem;
+  }
+  
+  .card-title a:hover {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  
+  .btn-primary {
+    background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+    border: none;
+    border-radius: 12px;
+    padding: 0.65rem 1.5rem;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+  }
+  
+  .btn-primary::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+    transition: left 0.5s;
+  }
+  
+  .btn-primary:hover::before {
+    left: 100%;
+  }
+  
+  .btn-primary:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 20px rgba(102, 126, 234, 0.5);
+  }
+  
+  .btn-outline-secondary {
+    border: 2px solid #667eea;
+    color: #667eea;
+    border-radius: 12px;
+    transition: all 0.3s ease;
+    font-weight: 600;
+  }
+  
+  .btn-outline-secondary:hover {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-color: transparent;
+    color: white;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(102,126,234,0.3);
+  }
+  
+  .no-products {
+    text-align: center;
+    padding: 4rem 2rem;
+    background: linear-gradient(135deg, #f5f7ff 0%, #e0e7ff 100%);
+    border-radius: 20px;
+    border: 3px dashed #667eea;
+    color: #667eea;
+    font-size: 1.2rem;
+    animation: fadeIn 0.5s ease;
+  }
+  
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  
+  .price-display {
+    background: linear-gradient(135deg, #43e97b 0%, #3dd771 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    font-weight: 800;
+    font-size: 1.8rem !important;
+  }
+  
+  .stock-info {
+    color: #10b981;
+    font-weight: 600;
+    background: rgba(16,185,129,0.1);
+    padding: 0.3rem 0.8rem;
+    border-radius: 20px;
+    font-size: 0.85rem;
+  }
+  
+  .form-control {
+    border-radius: 10px;
+    border: 2px solid #e0e7ff;
+    transition: all 0.3s ease;
+  }
+  
+  .form-control:focus {
+    border-color: #667eea;
+    box-shadow: 0 0 0 0.2rem rgba(102,126,234,0.15);
+  }
+</style>
+
+<div class="catalog-header">
+  <div class="container" style="position: relative; z-index: 1;">
+    <div class="d-flex justify-content-between align-items-center">
+      <div>
+        <h1 class="mb-2 fw-bold" style="font-size: 2.5rem;"><i class="bi bi-grid-3x3-gap-fill me-3"></i>Catálogo de Productos</h1>
+        <p class="mb-0 opacity-90" style="font-size: 1.1rem;">✨ Encuentra todo lo que tu mascota necesita ✨</p>
+      </div>
+      <a class="btn btn-light d-lg-none shadow-sm" data-bs-toggle="collapse" href="#catalogFilters" role="button" style="border-radius: 12px; font-weight: 600;">
+        <i class="bi bi-funnel-fill me-2"></i>Filtros
+      </a>
+    </div>
   </div>
+</div>
+
+<div class="container">
   <div class="row">
-    <div class="col-lg-3 mb-3">
+    <div class="col-lg-3 mb-4">
       <div id="catalogFilters" class="filter-card collapse show">
-        <h6 class="mb-3">Filtros</h6>
+        <h6 class="mb-3"><i class="bi bi-sliders me-2"></i>Filtros</h6>
         <form method="get">
           <div class="mb-3">
-            <label class="form-label">Categorías</label>
+            <label class="form-label fw-semibold">Categorías</label>
             {% for cat in categorias %}
               <div class="form-check">
                 <input class="form-check-input" name="categoria" type="checkbox" value="{{ cat }}" id="cat-{{ forloop.counter }}" {% if cat in selected_categories %}checked{% endif %}>
@@ -22,56 +255,74 @@
           </div>
           <div class="row">
             <div class="col-6 mb-2">
-              <label class="form-label">Precio min</label>
-              <input name="min_price" class="form-control" value="{{ request.GET.min_price }}">
+              <label class="form-label fw-semibold">Precio min</label>
+              <input name="min_price" class="form-control" value="{{ request.GET.min_price }}" placeholder="$0">
             </div>
             <div class="col-6 mb-2">
-              <label class="form-label">Precio max</label>
-              <input name="max_price" class="form-control" value="{{ request.GET.max_price }}">
+              <label class="form-label fw-semibold">Precio max</label>
+              <input name="max_price" class="form-control" value="{{ request.GET.max_price }}" placeholder="$999">
             </div>
           </div>
-          <div class="d-flex gap-2">
-            <button class="btn btn-primary" type="submit">Aplicar</button>
-            <a href="/productos/" class="btn btn-outline-secondary">Limpiar</a>
+          <div class="d-flex gap-2 mt-3">
+            <button class="btn btn-primary flex-grow-1" type="submit">
+              <i class="bi bi-check-circle me-1"></i>Aplicar
+            </button>
+            <a href="/productos/" class="btn btn-outline-secondary">
+              <i class="bi bi-x-circle"></i>
+            </a>
           </div>
         </form>
       </div>
     </div>
+    
     <div class="col-lg-9">
       <div id="productosContainer" class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
-    {% for p in productos %}
-      <div class="col">
-        <div class="product-card h-100 position-relative overflow-hidden">
-          <div class="thumb-wrapper">
-            {% if p.image %}
-              <img src="{{ p.image.url }}" class="thumb-img product-image" alt="{{ p.nombre }}">
-            {% else %}
-              <img src="/static/img/placeholder.png" class="thumb-img product-image" alt="Sin imagen">
-            {% endif %}
-            {% if p.categoria %}
-              <span class="badge bg-secondary categoria-badge">{{ p.categoria }}</span>
-            {% endif %}
-          </div>
-          <div class="card-body d-flex flex-column">
-            <h5 class="card-title"><a href="/productos/{{ p.id }}/" class="stretched-link text-decoration-none text-dark">{{ p.nombre }}</a></h5>
-            <p class="card-text small text-muted">{{ p.descripcion|truncatechars:100 }}</p>
-            <div class="mt-auto d-flex justify-content-between align-items-center">
-              <div>
-                <div class="fw-bold h5 mb-0">${{ p.precio }}</div>
-                <small class="text-muted">Stock: {{ p.stock }}</small>
+        {% for p in productos %}
+        <div class="col">
+          <div class="product-card h-100">
+            <div class="thumb-wrapper">
+              {% if p.image %}
+                <img src="{{ p.image.url }}" class="product-image" alt="{{ p.nombre }}" onerror="this.onerror=null; this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22200%22 height=%22200%22%3E%3Crect fill=%22%23e0e7ff%22 width=%22200%22 height=%22200%22/%3E%3Ctext fill=%22%23667eea%22 font-family=%22Arial%22 font-size=%2218%22 text-anchor=%22middle%22 x=%22100%22 y=%22100%22%3ESin imagen%3C/text%3E%3C/svg%3E';">
+              {% else %}
+                <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Crect fill='%23e0e7ff' width='200' height='200'/%3E%3Ctext fill='%23667eea' font-family='Arial' font-size='18' text-anchor='middle' x='100' y='100'%3ESin imagen%3C/text%3E%3C/svg%3E" class="product-image" alt="Sin imagen">
+              {% endif %}
+              {% if p.categoria %}
+                <span class="categoria-badge">{{ p.categoria }}</span>
+              {% endif %}
+            </div>
+            <div class="card-body d-flex flex-column p-3">
+              <h5 class="card-title mb-2">
+                <a href="/productos/{{ p.id }}/" class="stretched-link text-decoration-none">{{ p.nombre }}</a>
+              </h5>
+              <p class="card-text small text-muted mb-3">{{ p.descripcion|truncatechars:80 }}</p>
+              <div class="mt-auto">
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                  <div class="price-display h5 mb-0">${{ p.precio }}</div>
+                  <small class="stock-info">
+                    <i class="bi bi-box-seam me-1"></i>{{ p.stock }} disponible{% if p.stock != 1 %}s{% endif %}
+                  </small>
+                </div>
+                <form method="post" action="/carrito/add/{{ p.pk }}/" style="position: relative; z-index: 10;">
+                  {% csrf_token %}
+                  <button class="btn btn-primary w-100" {% if p.stock == 0 %}disabled{% endif %}>
+                    <i class="bi bi-cart-plus me-1"></i>
+                    {% if p.stock == 0 %}Sin stock{% else %}Agregar al carrito{% endif %}
+                  </button>
+                </form>
               </div>
-              <form method="post" action="/carrito/add/{{ p.pk }}/">
-                {% csrf_token %}
-                <button class="btn btn-sm btn-primary">Añadir</button>
-              </form>
             </div>
           </div>
         </div>
-      </div>
-    {% empty %}
-      <div class="col-12"><div class="no-products">No hay productos disponibles.</div></div>
-    {% endfor %}
+        {% empty %}
+        <div class="col-12">
+          <div class="no-products">
+            <i class="bi bi-inbox display-4 d-block mb-3"></i>
+            <p class="mb-0">No hay productos disponibles con los filtros seleccionados</p>
+          </div>
+        </div>
+        {% endfor %}
       </div>
     </div>
   </div>
+</div>
 {% endblock %}

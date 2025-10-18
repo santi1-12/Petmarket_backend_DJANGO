@@ -1,34 +1,151 @@
-<h5>Clientes</h5>
-<form method="get" class="mb-2">
-  <input type="text" name="q" value="{{ q }}" placeholder="Buscar cliente..." class="form-control" style="max-width:300px;display:inline-block">
-  <button class="btn btn-primary btn-sm">Buscar</button>
-  <a href="{% url 'empleados:cliente_create' %}" class="btn btn-success btn-sm">Agregar cliente</a>
-</form>
-<table class="table table-striped">
-  <thead>
-    <tr>
-      <th>Nombre</th>
-      <th>Email</th>
-      <th>Teléfono</th>
-      <th>Dirección</th>
-      <th>Acciones</th>
-    </tr>
-  </thead>
-  <tbody>
-    {% for c in clientes %}
-    <tr>
-      <td>{{ c.nombre }}</td>
-      <td>{{ c.email }}</td>
-      <td>{{ c.telefono }}</td>
-      <td>{{ c.direccion }}</td>
-      <td>
-        <a href="{% url 'empleados:cliente_detail' c.id %}" class="btn btn-info btn-sm">Ver</a>
-        <a href="{% url 'empleados:cliente_edit' c.id %}" class="btn btn-warning btn-sm">Editar</a>
-        <a href="{% url 'empleados:cliente_delete' c.id %}" class="btn btn-danger btn-sm">Eliminar</a>
-      </td>
-    </tr>
-    {% empty %}
-    <tr><td colspan="5">No hay clientes.</td></tr>
-    {% endfor %}
-  </tbody>
-</table>
+{% extends 'base.html' %}
+{% block title %}Gestión de Clientes{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+  <!-- Header -->
+  <div class="row mb-4">
+    <div class="col-12">
+      <div class="card border-0 shadow-lg" style="border-radius: 18px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+        <div class="card-body py-4 px-4">
+          <div class="d-flex justify-content-between align-items-center flex-wrap">
+            <div>
+              <h2 class="mb-0 text-white fw-bold"><i class="bi bi-people-fill me-2"></i>Gestión de Clientes</h2>
+              <p class="text-white-50 mb-0 mt-1">{{ clientes|length }} cliente(s) registrado(s)</p>
+            </div>
+            <div class="d-flex gap-2">
+              <a href="{% url 'empleados:admin_dashboard' %}" class="btn btn-light shadow-sm" style="border-radius: 12px; font-weight: 600;">
+                <i class="bi bi-arrow-left me-2"></i>Volver
+              </a>
+              <a href="{% url 'empleados:cliente_create' %}" class="btn btn-success shadow-sm" style="border-radius: 12px; font-weight: 600; background: linear-gradient(90deg, #43e97b 0%, #3dd771 100%); border: none;">
+                <i class="bi bi-plus-circle me-2"></i>Agregar Cliente
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Buscador -->
+  <div class="row mb-4">
+    <div class="col-12">
+      <div class="card border-0 shadow-sm" style="border-radius: 15px;">
+        <div class="card-body p-3">
+          <form method="get" class="row g-3 align-items-center">
+            <div class="col-auto flex-grow-1">
+              <div class="input-group">
+                <span class="input-group-text border-0" style="background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%); border-radius: 10px 0 0 10px;">
+                  <i class="bi bi-search"></i>
+                </span>
+                <input type="text" name="q" value="{{ q }}" placeholder="Buscar por nombre o email..." class="form-control border-0" style="background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%); border-radius: 0 10px 10px 0;">
+              </div>
+            </div>
+            <div class="col-auto">
+              <button type="submit" class="btn shadow-sm" style="background: linear-gradient(90deg, #667eea 0%, #764ba2 100%); color: white; border: none; border-radius: 10px; font-weight: 600;">
+                <i class="bi bi-search me-2"></i>Buscar
+              </button>
+              {% if q %}
+              <a href="{% url 'empleados:clientes_list' %}" class="btn btn-outline-secondary" style="border-radius: 10px;">
+                <i class="bi bi-x-circle"></i>
+              </a>
+              {% endif %}
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Tabla de Clientes -->
+  <div class="row">
+    <div class="col-12">
+      <div class="card border-0 shadow-sm" style="border-radius: 15px;">
+        <div class="card-body p-0">
+          <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+              <thead style="background: linear-gradient(90deg, #f8f9fa 0%, #e9ecef 100%); position: sticky; top: 0; z-index: 10;">
+                <tr>
+                  <th class="py-3 ps-4" style="border-radius: 15px 0 0 0;">#</th>
+                  <th class="py-3">Cliente</th>
+                  <th class="py-3">Contacto</th>
+                  <th class="py-3">Dirección</th>
+                  <th class="py-3 text-end pe-4" style="border-radius: 0 15px 0 0;">Acciones</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for c in clientes %}
+                <tr style="transition: all 0.3s ease; border-left: 4px solid transparent;">
+                  <td class="ps-4">
+                    <span class="badge bg-secondary" style="font-size: 0.85rem;">{{ forloop.counter }}</span>
+                  </td>
+                  <td>
+                    <div class="d-flex align-items-center">
+                      <div class="rounded-circle d-flex align-items-center justify-content-center me-3" style="width: 40px; height: 40px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; font-weight: 700;">
+                        {{ c.nombre|slice:":2"|upper }}
+                      </div>
+                      <div>
+                        <div class="fw-bold">{{ c.nombre }}</div>
+                        <small class="text-muted">Cliente #{{ c.id }}</small>
+                      </div>
+                    </div>
+                  </td>
+                  <td>
+                    <div>
+                      <div><i class="bi bi-envelope me-2 text-muted"></i>{{ c.email|default:"Sin email" }}</div>
+                      <div><i class="bi bi-telephone me-2 text-muted"></i>{{ c.telefono|default:"Sin teléfono" }}</div>
+                    </div>
+                  </td>
+                  <td>
+                    <small class="text-muted">{{ c.direccion|default:"Sin dirección"|truncatewords:5 }}</small>
+                  </td>
+                  <td class="text-end pe-4">
+                    <div class="btn-group shadow-sm" role="group" style="border-radius: 10px; overflow: hidden;">
+                      <a href="{% url 'empleados:cliente_detail' c.id %}" class="btn btn-sm" style="background: linear-gradient(90deg, #667eea 0%, #764ba2 100%); color: white; border: none;" title="Ver detalles">
+                        <i class="bi bi-eye"></i>
+                      </a>
+                      <a href="{% url 'empleados:cliente_edit' c.id %}" class="btn btn-sm" style="background: linear-gradient(90deg, #ffd93d 0%, #f7a800 100%); color: white; border: none;" title="Editar">
+                        <i class="bi bi-pencil"></i>
+                      </a>
+                      <a href="{% url 'empleados:cliente_delete' c.id %}" class="btn btn-sm" style="background: linear-gradient(90deg, #ff6b6b 0%, #ee5a52 100%); color: white; border: none;" title="Eliminar" onclick="return confirm('¿Estás seguro de eliminar este cliente?');">
+                        <i class="bi bi-trash"></i>
+                      </a>
+                    </div>
+                  </td>
+                </tr>
+                {% empty %}
+                <tr>
+                  <td colspan="5" class="text-center py-5">
+                    <i class="bi bi-inbox display-4 text-muted d-block mb-3"></i>
+                    <p class="text-muted mb-0">No hay clientes registrados</p>
+                    <a href="{% url 'empleados:cliente_create' %}" class="btn btn-primary mt-3" style="border-radius: 10px;">
+                      <i class="bi bi-plus-circle me-2"></i>Agregar Primer Cliente
+                    </a>
+                  </td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+.table-hover tbody tr:hover {
+  background: rgba(102,126,234,0.05);
+  transform: translateX(5px);
+  border-left-color: #667eea !important;
+}
+.btn-group .btn:hover {
+  transform: scale(1.1);
+  z-index: 1;
+}
+.input-group:focus-within {
+  transform: scale(1.02);
+  transition: all 0.3s ease;
+}
+</style>
+{% endblock %}

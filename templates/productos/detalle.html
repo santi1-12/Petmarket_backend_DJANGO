@@ -2,45 +2,407 @@
 {% block title %}{{ producto.nombre }} - PetMarket{% endblock %}
 
 {% block content %}
+<style>
+  .product-detail-container {
+    padding: 2.5rem 0;
+  }
+  
+  .breadcrumb {
+    background: transparent;
+    padding: 0;
+    margin-bottom: 2rem;
+  }
+  
+  .breadcrumb-item + .breadcrumb-item::before {
+    color: #667eea;
+    content: "›";
+    font-size: 1.3rem;
+  }
+  
+  .breadcrumb-item a {
+    color: #667eea;
+    text-decoration: none;
+    font-weight: 500;
+    transition: all 0.3s ease;
+  }
+  
+  .breadcrumb-item a:hover {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  
+  .breadcrumb-item.active {
+    color: #6c757d;
+    font-weight: 600;
+  }
+  
+  .image-card {
+    background: white;
+    border-radius: 20px;
+    padding: 2rem;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.1);
+    border: none;
+    transition: all 0.3s ease;
+    animation: fadeInLeft 0.6s ease;
+  }
+  
+  @keyframes fadeInLeft {
+    from { opacity: 0; transform: translateX(-30px); }
+    to { opacity: 1; transform: translateX(0); }
+  }
+  
+  @keyframes fadeInRight {
+    from { opacity: 0; transform: translateX(30px); }
+    to { opacity: 1; transform: translateX(0); }
+  }
+  
+  .image-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 12px 32px rgba(102,126,234,0.2);
+  }
+  
+  .image-wrapper {
+    height: 450px;
+    background: linear-gradient(135deg, #f5f7ff 0%, #e0e7ff 100%);
+    border-radius: 15px;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+  }
+  
+  .image-wrapper::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: radial-gradient(circle at 50% 50%, rgba(102,126,234,0.1) 0%, transparent 70%);
+  }
+  
+  .product-detail-image {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    transition: transform 0.5s ease;
+  }
+  
+  .image-card:hover .product-detail-image {
+    transform: scale(1.05);
+  }
+  
+  .info-card {
+    background: white;
+    border-radius: 20px;
+    padding: 2.5rem;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.1);
+    border: none;
+    animation: fadeInRight 0.6s ease;
+  }
+  
+  .product-title {
+    background: linear-gradient(135deg, #2d3748 0%, #667eea 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    font-weight: 800;
+    margin-bottom: 1.2rem;
+    font-size: 2.2rem;
+    line-height: 1.3;
+  }
+  
+  .categoria-badge {
+    background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 0.6rem 1.3rem;
+    border-radius: 25px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    display: inline-block;
+    margin-bottom: 1.2rem;
+    box-shadow: 0 4px 12px rgba(102,126,234,0.3);
+    letter-spacing: 0.5px;
+    animation: bounceIn 0.8s ease;
+  }
+  
+  @keyframes bounceIn {
+    0% { transform: scale(0); opacity: 0; }
+    50% { transform: scale(1.1); }
+    100% { transform: scale(1); opacity: 1; }
+  }
+  
+  .price-display {
+    background: linear-gradient(135deg, #43e97b 0%, #3dd771 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    font-weight: 900;
+    font-size: 3rem;
+    margin-bottom: 1.5rem;
+    animation: pulse 2s ease infinite;
+  }
+  
+  @keyframes pulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.02); }
+  }
+  
+  .stock-indicator {
+    background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%);
+    border: 3px solid #10b981;
+    color: #10b981;
+    padding: 1rem 1.8rem;
+    border-radius: 15px;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.7rem;
+    font-weight: 700;
+    margin-bottom: 1.8rem;
+    box-shadow: 0 4px 12px rgba(16,185,129,0.2);
+    animation: fadeIn 0.8s ease;
+  }
+  
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  
+  .stock-indicator.low-stock {
+    background: linear-gradient(135deg, #fff7ed 0%, #ffedd5 100%);
+    border-color: #f59e0b;
+    color: #f59e0b;
+    animation: warning-blink 1.5s ease infinite;
+  }
+  
+  @keyframes warning-blink {
+    0%, 100% { box-shadow: 0 4px 12px rgba(245,158,11,0.2); }
+    50% { box-shadow: 0 4px 20px rgba(245,158,11,0.4); }
+  }
+  
+  .stock-indicator.out-of-stock {
+    background: linear-gradient(135deg, #fef2f2 0%, #fee2e2 100%);
+    border-color: #ef4444;
+    color: #ef4444;
+    box-shadow: 0 4px 12px rgba(239,68,68,0.2);
+  }
+  
+  .description-section {
+    background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+    padding: 1.8rem;
+    border-radius: 15px;
+    margin-bottom: 2rem;
+    border-left: 5px solid #667eea;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+  }
+  
+  .description-section h6 {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    font-weight: 700;
+    margin-bottom: 1rem;
+    font-size: 1.1rem;
+  }
+  
+  .btn-add-cart {
+    background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+    border: none;
+    color: white;
+    padding: 1.2rem 2.5rem;
+    border-radius: 15px;
+    font-weight: 700;
+    font-size: 1.15rem;
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    box-shadow: 0 6px 20px rgba(102,126,234,0.3);
+    position: relative;
+    overflow: hidden;
+  }
+  
+  .btn-add-cart::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+    transition: left 0.6s;
+  }
+  
+  .btn-add-cart:hover:not(:disabled)::before {
+    left: 100%;
+  }
+  
+  .btn-add-cart:hover:not(:disabled) {
+    transform: translateY(-5px) scale(1.05);
+    box-shadow: 0 12px 30px rgba(102, 126, 234, 0.5);
+    color: white;
+  }
+  
+  .btn-add-cart:active:not(:disabled) {
+    transform: translateY(-2px) scale(1.02);
+  }
+  
+  .btn-add-cart:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    background: #9ca3af;
+  }
+  
+  .btn-back {
+    border: 3px solid #667eea;
+    background: white;
+    color: #667eea;
+    border-radius: 15px;
+    padding: 1.2rem 2rem;
+    font-weight: 700;
+    font-size: 1.1rem;
+    transition: all 0.3s ease;
+  }
+  
+  .btn-back:hover {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    transform: translateY(-3px);
+    box-shadow: 0 8px 20px rgba(102,126,234,0.3);
+  }
+  
+  .action-buttons {
+    display: flex;
+    gap: 1.2rem;
+    flex-wrap: wrap;
+  }
+  
+  .admin-actions {
+    margin-top: 2.5rem;
+    padding-top: 2.5rem;
+    border-top: 3px dashed rgba(102,126,234,0.3);
+  }
+  
+  .admin-actions h6 {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    font-weight: 700;
+    font-size: 1.1rem;
+  }
+  
+  .admin-actions .btn {
+    border-radius: 10px;
+    padding: 0.7rem 1.3rem;
+    font-weight: 600;
+    transition: all 0.3s ease;
+  }
+  
+  .admin-actions .btn:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 16px rgba(0,0,0,0.15);
+  }
+</style>
+
+<div class="container product-detail-container">
+  <nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+      <li class="breadcrumb-item"><a href="/"><i class="bi bi-house-door"></i> Inicio</a></li>
+      <li class="breadcrumb-item"><a href="/productos/">Catálogo</a></li>
+      <li class="breadcrumb-item active" aria-current="page">{{ producto.nombre }}</li>
+    </ol>
+  </nav>
+
   <div class="row gx-4 gy-4">
     <div class="col-lg-6">
-      <div class="card p-3">
-        <div class="thumb-wrapper" style="height:420px">
+      <div class="image-card">
+        <div class="image-wrapper">
           {% if producto.image %}
-            <img src="{{ producto.image.url }}" class="thumb-img product-image rounded" alt="{{ producto.nombre }}">
+            <img src="{{ producto.image.url }}" class="product-detail-image" alt="{{ producto.nombre }}" onerror="this.onerror=null; this.parentElement.innerHTML='<div class=\'text-center text-muted\'><i class=\'bi bi-image display-1\'></i><p class=\'mt-3\'>Imagen no disponible</p></div>';">
           {% else %}
-            <div class="thumb-img">Sin imagen</div>
+            <div class="text-center text-muted">
+              <i class="bi bi-image display-1"></i>
+              <p class="mt-3">Sin imagen disponible</p>
+            </div>
           {% endif %}
-        </div>
-        <div class="d-flex gap-2 mt-3">
-          <a class="btn btn-outline-secondary" href="/productos/">Volver</a>
         </div>
       </div>
     </div>
+    
     <div class="col-lg-6">
-      <div class="card p-3">
-        <h1 class="h3">{{ producto.nombre }}</h1>
-        <p class="text-muted small mb-3">{{ producto.descripcion }}</p>
-        <div class="d-flex align-items-center gap-3 mb-3">
-          <div class="h3 mb-0">${{ producto.precio }}</div>
-          <div class="text-muted">Stock: <strong>{{ producto.stock }}</strong></div>
+      <div class="info-card">
+        {% if producto.categoria %}
+          <span class="categoria-badge">
+            <i class="bi bi-tag-fill me-1"></i>{{ producto.categoria }}
+          </span>
+        {% endif %}
+        
+        <h1 class="product-title">{{ producto.nombre }}</h1>
+        
+        <div class="price-display">${{ producto.precio }}</div>
+        
+        {% if producto.stock > 0 %}
+          {% if producto.stock <= 5 %}
+            <div class="stock-indicator low-stock">
+              <i class="bi bi-exclamation-triangle-fill"></i>
+              ¡Solo quedan {{ producto.stock }}!
+            </div>
+          {% else %}
+            <div class="stock-indicator">
+              <i class="bi bi-check-circle-fill"></i>
+              {{ producto.stock }} disponibles
+            </div>
+          {% endif %}
+        {% else %}
+          <div class="stock-indicator out-of-stock">
+            <i class="bi bi-x-circle-fill"></i>
+            Sin stock
+          </div>
+        {% endif %}
+        
+        <div class="description-section">
+          <h6><i class="bi bi-info-circle me-2"></i>Descripción</h6>
+          <p class="mb-0">{{ producto.descripcion }}</p>
         </div>
+        
         <form method="post" action="/carrito/add/{{ producto.pk }}/">
           {% csrf_token %}
-          <div class="d-flex gap-2">
-            <button class="btn btn-primary">Añadir al carrito</button>
-            <a class="btn btn-outline-secondary" href="/productos/">Seguir comprando</a>
+          <div class="action-buttons">
+            <button class="btn btn-add-cart" {% if producto.stock == 0 %}disabled{% endif %}>
+              <i class="bi bi-cart-plus me-2"></i>
+              {% if producto.stock == 0 %}
+                Producto agotado
+              {% else %}
+                Añadir al carrito
+              {% endif %}
+            </button>
+            <a class="btn btn-back" href="/productos/">
+              <i class="bi bi-arrow-left me-2"></i>Volver al catálogo
+            </a>
           </div>
         </form>
+        
         {% if request.user.is_authenticated %}
           {% if request.user.role == 'empleado' or request.user.role == 'admin' %}
-            <div class="mt-3">
-              <a class="btn btn-sm btn-outline-primary" href="/productos/{{ producto.pk }}/editar/">Editar</a>
-              <a class="btn btn-sm btn-outline-danger" href="/productos/{{ producto.pk }}/eliminar/">Eliminar</a>
+            <div class="admin-actions">
+              <h6 class="text-muted mb-3">
+                <i class="bi bi-shield-lock me-2"></i>Acciones de administrador
+              </h6>
+              <div class="d-flex gap-2">
+                <a class="btn btn-sm btn-outline-primary" href="/productos/{{ producto.pk }}/editar/">
+                  <i class="bi bi-pencil me-1"></i>Editar
+                </a>
+                <a class="btn btn-sm btn-outline-danger" href="/productos/{{ producto.pk }}/eliminar/">
+                  <i class="bi bi-trash me-1"></i>Eliminar
+                </a>
+              </div>
             </div>
           {% endif %}
         {% endif %}
       </div>
     </div>
   </div>
+</div>
 {% endblock %}
